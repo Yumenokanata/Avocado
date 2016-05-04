@@ -1,5 +1,7 @@
 package indi.yume.tools.avocado;
 
+import com.google.common.collect.Range;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -7,8 +9,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
+import indi.yume.tools.avocado.collect.DayDateIterable;
 import indi.yume.tools.avocado.model.DayDate;
 
 import static org.junit.Assert.*;
@@ -70,6 +74,8 @@ public class ExampleUnitTest {
         }
 
         long time = System.currentTimeMillis();
+        Timer timer = new Timer();
+        timer.start();
         for (int n = 0; n < 4; n++) {
             List<DayDate> tempList = new ArrayList<>();
             int start = 100;
@@ -87,6 +93,31 @@ public class ExampleUnitTest {
 
             System.out.println("result= " + tempList.size());
         }
+        timer.stopAndPrint();
         System.out.println("HashSet: spend time= " + (System.currentTimeMillis() - time));
+    }
+
+    @Test
+    public void testRangeIterable() {
+        Timer timer = new Timer();
+
+        Range<DayDate> tempRange = Range.closed(new DayDate(2015, 9, 3), new DayDate(2016, 9, 3));
+
+//        timer.start();
+//        DayDate tempDate = new DayDate();
+//        for(int i = 0; i < 100; i++) {
+//            tempDate.equals(tempDate);
+//            tempDate.getTime();
+//            tempDate.addDay(1);
+//        }
+//        timer.stopAndPrint();
+
+        DayDate tempDate = new DayDate();
+        timer.start();
+        String msg = "";
+        for(DayDate dayDate : DayDateIterable.of(tempRange))
+            tempDate = dayDate;
+        timer.stopAndPrint();
+        System.out.println(tempDate.toString());
     }
 }

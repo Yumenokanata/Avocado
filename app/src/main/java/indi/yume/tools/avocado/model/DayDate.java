@@ -1,11 +1,15 @@
 package indi.yume.tools.avocado.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import lombok.EqualsAndHashCode;
 
@@ -13,18 +17,18 @@ import lombok.EqualsAndHashCode;
  * Created by yume on 15/10/8.
  */
 @EqualsAndHashCode(exclude = {"calendar"})
-public class DayDate implements Comparable<DayDate> {
+public class DayDate implements Comparable<DayDate>, Parcelable, Serializable {
     private static final int[] mouth_calculate = {2, 5, 5, 1, 3, 6, 1, 4, 0, 2, 5, 0};
     private static final int[] mouth_sum_num = {31,28,31,30,31,30,31,31,30,31,30,31};
 
-    private int year = 1900;
+    protected int year = 1900;
     //0~11
     @IntRange(from = 0, to = 11)
-    private int month = 0;
+    protected int month = 0;
     //1~
-    private int day = 1;
+    protected int day = 1;
 
-    private Calendar calendar;
+    protected Calendar calendar;
 
     public static DayDate preDayDate(@Nullable DayDate targetDate) {
         if (targetDate == null) {
@@ -146,7 +150,10 @@ public class DayDate implements Comparable<DayDate> {
     }
 
     // 0~6
-    public static int whatDayIsIt(int year, int mouth, int day){
+    @IntRange(from = 0, to = 6)
+    public static int whatDayIsIt(int year,
+                                  @IntRange(from = 1, to = 12) int mouth,
+                                  int day){
         return (day + mouth_calculate[mouth - 1]) % 7;
     }
 
@@ -174,7 +181,7 @@ public class DayDate implements Comparable<DayDate> {
 
     @Override
     public String toString() {
-        return String.format("%04d/%02d/%02d", year, month + 1, day);
+        return String.format(Locale.getDefault(), "%04d/%02d/%02d", year, month + 1, day);
     }
 
     @Override
@@ -206,4 +213,36 @@ public class DayDate implements Comparable<DayDate> {
 
         return 0;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.year);
+        dest.writeInt(this.month);
+        dest.writeInt(this.day);
+        dest.writeSerializable(this.calendar);
+    }
+
+    protected DayDate(Parcel in) {
+        this.year = in.readInt();
+        this.month = in.readInt();
+        this.day = in.readInt();
+        this.calendar = (Calendar) in.readSerializable();
+    }
+
+    public static final Creator<DayDate> CREATOR = new Creator<DayDate>() {
+        @Override
+        public DayDate createFromParcel(Parcel source) {
+            return new DayDate(source);
+        }
+
+        @Override
+        public DayDate[] newArray(int size) {
+            return new DayDate[size];
+        }
+    };
 }
