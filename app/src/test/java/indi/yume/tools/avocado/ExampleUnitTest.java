@@ -1,6 +1,8 @@
 package indi.yume.tools.avocado;
 
 import com.google.common.collect.Range;
+import com.google.common.collect.RangeMap;
+import com.google.common.collect.TreeRangeMap;
 
 import org.junit.Test;
 
@@ -119,5 +121,15 @@ public class ExampleUnitTest {
             tempDate = dayDate;
         timer.stopAndPrint();
         System.out.println(tempDate.toString());
+    }
+
+    @Test
+    public void testRangeMap() {
+        RangeMap<Integer, String> rangeMap = TreeRangeMap.create();
+
+        rangeMap.put(Range.closed(0, 4), "0-4");
+        rangeMap.put(Range.closed(1, 2), "1-2");
+
+        System.out.println(rangeMap.get(3));
     }
 }
