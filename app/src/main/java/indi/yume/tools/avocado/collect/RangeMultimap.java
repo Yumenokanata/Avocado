@@ -2,145 +2,221 @@ package indi.yume.tools.avocado.collect;
 
 import android.support.annotation.NonNull;
 
-import com.google.common.collect.AbstractMapEntry;
 import com.google.common.collect.BoundType;
-import com.google.common.collect.Cut;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
+import com.google.common.collect.Sets;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import indi.yume.tools.avocado.model.DayDate;
+import indi.yume.tools.avocado.util.Timer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Created by yume on 16-5-4.
  */
-public class RangeMultimap<K extends Comparable, V> implements Multimap<K, V> {
-    private final NavigableMap<Cut<K>, RangeMapEntry<K, V>> entriesByLowerBound = new TreeMap<>();
-    private final NavigableMap<Cut<K>, RangeMapEntry<K, V>> entriesByUpperBound = new TreeMap<>();
+public class RangeMultimap<K extends Comparable, V> implements Map<Range<K>, V> {
+    private final NavigableMap<K, HashSet<RangeMapEntry<K, V>>> entriesByLowerBound = new TreeMap<>();
+    private final NavigableMap<K, HashSet<RangeMapEntry<K, V>>> entriesByUpperBound = new TreeMap<>();
+
+    private final HashMultimap<Range<K>, V> allValueMap = HashMultimap.create();
 
     @Data
-    @AllArgsConstructor
-    private static class Cut<T extends Comparable> implements Comparable<Cut<T>> {
-        private BoundType type;
-        private T value;
+    @AllArgsConstructor(staticName = "of")
+    @EqualsAndHashCode
+    private static final class RangeMapEntry<K extends Comparable, V> implements Map.Entry<Range<K>, V> {
+        private final Range<K> range;
+        private final V value;
 
         @Override
-        public int compareTo(@NonNull Cut<T> another) {
-            if(value == null && another.value == null)
-                return 0;
+        public Range<K> getKey() {
+            return range;
+        }
 
-            if(value == null)
-                return -1;
-            if(another.value == null)
-                return 1;
-            return value.compareTo(another.value);
+        @Override
+        public V setValue(V object) {
+            return value;
         }
     }
 
-    @Data
-    @AllArgsConstructor
-    private static final class RangeMapEntry<K extends Comparable, V> {
-        private final Range<K> range;
-        private final V value;
-    }
-
-    @Override
     public int size() {
-        return entriesByLowerBound.size();
+        return allValueMap.size();
     }
 
-    @Override
     public boolean isEmpty() {
-        return entriesByLowerBound.isEmpty();
+        return allValueMap.isEmpty();
     }
 
-    @Override
     public boolean containsKey(Object key) {
-        entriesByLowerBound.floorEntry(key);
-        return false;
+        return allValueMap.containsKey(key);
     }
 
-    @Override
+    public boolean containsPoint(K point) {
+        return !getByPoint(point).isEmpty();
+    }
+
     public boolean containsValue(Object value) {
-        return false;
+        return allValueMap.containsValue(value);
+    }
+
+    @NonNull
+    @Override
+    public Set<Entry<Range<K>, V>> entrySet() {
+        return allValueMap.entries();
     }
 
     @Override
-    public boolean containsEntry(Object key, Object value) {
-        return false;
+    public V get(Object key) {
+        Range<K> keyRange;
+        try {
+            keyRange = (Range<K>) key;
+        } catch (ClassCastException e) {
+            return null;
+        }
+
+        Set<V> set = getAll(keyRange);
+        return set.isEmpty() ? null : set.iterator().next();
+    }
+
+    public Set<V> getAll(Range<K> keyRange) {
+        return allValueMap.get(keyRange);
+    }
+
+    public Set<Map.Entry<Range<K>, V>> getByPoint(K point) {
+        Timer timer = new Timer(getClass().getSimpleName());
+        timer.start();
+        SortedMap<K, HashSet<RangeMapEntry<K, V>>> entryLowerMap = entriesByLowerBound.headMap(point, true);
+        SortedMap<K, HashSet<RangeMapEntry<K, V>>> entryUpperMap = entriesByUpperBound.tailMap(point, true);
+
+        SortedMap<K, HashSet<RangeMapEntry<K, V>>> resultMap;
+        if(entryLowerMap.size() <= entryUpperMap.size()) {
+            resultMap = entryLowerMap;
+        } else {
+            resultMap = entryUpperMap;
+        }
+
+        HashSet<Map.Entry<Range<K>, V>> resultSet = new HashSet<>();
+        for(RangeMapEntry<K, V> entry : Iterables.concat(resultMap.values()))
+            if(entry.getRange().contains(point))
+                resultSet.add(entry);
+        return resultSet;
     }
 
     @Override
-    public boolean put(K key, V value) {
-        return false;
+    public V put(Range<K> key, V value) {
+        allValueMap.put(key, value);
+
+        HashSet<RangeMapEntry<K, V>> lowerHashSet = entriesByLowerBound.get(key.lowerEndpoint());
+        if(lowerHashSet == null)
+            lowerHashSet = new HashSet<>();
+
+        lowerHashSet.add(RangeMapEntry.of(key, value));
+        entriesByLowerBound.put(key.lowerEndpoint(), lowerHashSet);
+
+        HashSet<RangeMapEntry<K, V>> upperHashSet = entriesByUpperBound.get(key.upperEndpoint());
+        if(upperHashSet == null)
+            upperHashSet = new HashSet<>();
+
+        upperHashSet.add(RangeMapEntry.of(key, value));
+        entriesByUpperBound.put(key.upperEndpoint(), upperHashSet);
+
+        return value;
     }
 
     @Override
-    public boolean remove(Object key, Object value) {
-        return false;
+    public void putAll(Map<? extends Range<K>, ? extends V> map) {
+        for(Map.Entry<? extends Range<K>, ? extends V> entry : map.entrySet())
+            put(entry.getKey(), entry.getValue());
     }
 
     @Override
-    public boolean putAll(K key, Iterable<? extends V> values) {
-        return false;
+    public V remove(Object key) {
+        V value = get(key);
+
+        if(value == null)
+            return null;
+
+        Range<K> keyRange;
+        try {
+            keyRange = (Range<K>) key;
+        } catch (ClassCastException e) {
+            return null;
+        }
+
+        remove(keyRange, value);
+
+        return value;
     }
 
-    @Override
-    public boolean putAll(Multimap<? extends K, ? extends V> multimap) {
-        return false;
+    public boolean remove(Range<K> keyRange, V value) {
+        if(!allValueMap.remove(keyRange, value))
+            return false;
+
+        HashSet<RangeMapEntry<K, V>> lowerHashSet = entriesByLowerBound.get(keyRange.lowerEndpoint());
+        lowerHashSet.remove(RangeMapEntry.<K, V>of(keyRange, value));
+        HashSet<RangeMapEntry<K, V>> upperHashSet = entriesByUpperBound.get(keyRange.upperEndpoint());
+        upperHashSet.remove(RangeMapEntry.<K, V>of(keyRange, value));
+
+        return true;
     }
 
-    @Override
-    public Collection<V> replaceValues(K key, Iterable<? extends V> values) {
-        return null;
+    public boolean putAll(Range<K> key, Iterable<? extends V> values) {
+        allValueMap.putAll(key, values);
+
+        HashSet<RangeMapEntry<K, V>> lowerHashSet = entriesByLowerBound.get(key.lowerEndpoint());
+        if(lowerHashSet == null)
+            lowerHashSet = new HashSet<>();
+
+        for(V value : values)
+            lowerHashSet.add(RangeMapEntry.of(key, value));
+        entriesByLowerBound.put(key.lowerEndpoint(), lowerHashSet);
+
+        HashSet<RangeMapEntry<K, V>> upperHashSet = entriesByUpperBound.get(key.upperEndpoint());
+        if(upperHashSet == null)
+            upperHashSet = new HashSet<>();
+
+        for(V value : values)
+            lowerHashSet.add(RangeMapEntry.of(key, value));
+        entriesByLowerBound.put(key.lowerEndpoint(), upperHashSet);
+
+        return true;
     }
 
-    @Override
-    public Collection<V> removeAll(Object key) {
-        return null;
-    }
-
-    @Override
     public void clear() {
-
+        entriesByLowerBound.clear();
+        entriesByUpperBound.clear();
+        allValueMap.clear();
     }
 
-    @Override
-    public Collection<V> get(K key) {
-        return null;
+    @NonNull
+    public Set<Range<K>> keySet() {
+        return allValueMap.keySet();
     }
 
-    @Override
-    public Set<K> keySet() {
-        return null;
-    }
-
-    @Override
-    public Multiset<K> keys() {
-        return null;
-    }
-
-    @Override
+    @NonNull
     public Collection<V> values() {
-        return null;
+        return allValueMap.values();
     }
 
-    @Override
-    public Collection<Map.Entry<K, V>> entries() {
-        return null;
+    public Collection<Map.Entry<Range<K>, V>> entries() {
+        return allValueMap.entries();
     }
 
-    @Override
-    public Map<K, Collection<V>> asMap() {
-        return null;
+    public Map<Range<K>, Collection<V>> asMap() {
+        return allValueMap.asMap();
     }
 }

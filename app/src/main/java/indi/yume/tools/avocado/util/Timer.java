@@ -1,4 +1,4 @@
-package indi.yume.tools.avocado;
+package indi.yume.tools.avocado.util;
 
 import indi.yume.tools.avocado.util.LogUtil;
 
@@ -35,8 +35,17 @@ public class Timer {
         System.out.println(prefixMessage + "spend time= " + period);
     }
 
+    public void print(String prefix) {
+        System.out.println(prefix + "spend time= " + period);
+    }
+
     public void stopAndPrint() {
         stop();
-        print();
+        print(prefixMessage);
+    }
+
+    public void stopAndPrint(String prefix) {
+        stop();
+        print(prefix);
     }
 }
