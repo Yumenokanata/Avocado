@@ -25,6 +25,7 @@ import indi.yume.tools.avocado.collect.interval.IntervalTree;
 import indi.yume.tools.avocado.model.DayDate;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.util.Timer;
+import rx.Observable;
 
 import static org.junit.Assert.*;
 
@@ -153,7 +154,7 @@ public class ExampleUnitTest {
         String prefixString = "item";
         Timer timer = new Timer();
 
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 3000; i++) {
             int range = Math.abs(random.nextInt());
             int maxRange = min + range + random.nextInt(max - min);
             int minRange = maxRange - range;
@@ -161,7 +162,7 @@ public class ExampleUnitTest {
                     String.format(Locale.getDefault(), "%s: %d-%d", prefixString, minRange, maxRange)));
         }
 
-        for(int i = 0; i < 42; i++) {
+        for(int i = 0; i < 40; i++) {
             testPointSet.add(min + random.nextInt(max - min));
         }
 
