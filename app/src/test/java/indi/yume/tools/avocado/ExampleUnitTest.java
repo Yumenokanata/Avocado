@@ -1,5 +1,6 @@
 package indi.yume.tools.avocado;
 
+import com.annimon.stream.Stream;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import indi.yume.tools.avocado.collect.DayDateIterable;
 import indi.yume.tools.avocado.collect.RangeMultimap;
@@ -141,70 +143,5 @@ public class ExampleUnitTest {
         rangeMap.put(Range.closed(1, 2), "1-2");
 
         System.out.println(rangeMap.get(3));
-    }
-
-    @Test
-    public void testRangeMultimap() {
-        Random random = new Random(3);
-
-        int max = 1000;
-        int min = 200;
-        Set<Tuple2<Range<Integer>, String>> testDataSet = new HashSet<>();
-        Set<Integer> testPointSet = new HashSet<>();
-        String prefixString = "item";
-        Timer timer = new Timer();
-
-        for(int i = 0; i < 3000; i++) {
-            int range = Math.abs(random.nextInt());
-            int maxRange = min + range + random.nextInt(max - min);
-            int minRange = maxRange - range;
-            testDataSet.add(Tuple2.of(Range.closed(minRange, maxRange),
-                    String.format(Locale.getDefault(), "%s: %d-%d", prefixString, minRange, maxRange)));
-        }
-
-        for(int i = 0; i < 40; i++) {
-            testPointSet.add(min + random.nextInt(max - min));
-        }
-
-        timer.start();
-        Multimap<Integer, Tuple2<Range<Integer>, String>> forGetData = HashMultimap.create();
-//        Map<Integer, Tuple2<Range<Integer>, String>> forGetData = new HashMap<>();
-        for(Integer point : testPointSet)
-            for(Tuple2<Range<Integer>, String> item : testDataSet)
-                if(item.getData1().contains(point))
-                    forGetData.put(point, item);
-        timer.stopAndPrint("forGetData: ");
-
-        RangeMultimap<Integer, String> rangeMultimap = new RangeMultimap<>();
-        for(Tuple2<Range<Integer>, String> item : testDataSet)
-            rangeMultimap.put(item.getData1(), item.getData2());
-
-        timer.start();
-        Multimap<Integer, Map.Entry<Range<Integer>, String>> mapGetData = HashMultimap.create();
-        for(Integer point : testPointSet) {
-            mapGetData.putAll(point, rangeMultimap.getByPoint(point));
-        }
-        timer.stopAndPrint("mapGetData: ");
-
-        IntervalTree<String> rangeTree = new IntervalTree<>();
-        for(Tuple2<Range<Integer>, String> item : testDataSet)
-            rangeTree.addInterval(item.getData1().lowerEndpoint(), item.getData1().upperEndpoint(), item.getData2());
-
-        timer.start();
-        Multimap<Integer, List<String>> treeGetData = HashMultimap.create();
-//        Map<Integer, List<String>> treeGetData = new HashMap<>();
-        for(Integer point : testPointSet) {
-            List<String> result = rangeTree.get(point);
-            treeGetData.put(point, result);
-        }
-        timer.stopAndPrint("treeGetData: ");
-
-//        for(Map.Entry<Integer, Collection<Tuple2<Range<Integer>, String>>> entry : forGetData.asMap().entrySet()) {
-//            Collection<List<String>> mapResult = mapGetData.get(entry.getKey());
-//            for(Tuple2<Range<Integer>, String> tuple2 : entry.getValue())
-//                for(List<String> list : mapResult)
-//                    if(!list.contains(tuple2.getData2()))
-//                        assertTrue(false);
-//        }
     }
 }

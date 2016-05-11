@@ -50,6 +50,12 @@ public class DayDate implements Comparable<DayDate>, Parcelable, Serializable {
         setValue(calendar);
     }
 
+    public DayDate(long time){
+        calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        setValue(calendar);
+    }
+
     public DayDate(int year,
                    @IntRange(from = 0, to = 11) int month,
                    int day) {
