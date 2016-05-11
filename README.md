@@ -68,15 +68,15 @@ List<String> result = map.get(new DayDate(2015, 9, 15));
 
 Tuple元组的一个简单标准，提供了2~8个属性数量
 
-实现了：
-1. equals()、hashCode()以及toString()
-2. of()静态工厂方法
-3. 全参数和无参数构造
+实现了：  
+1. equals()、hashCode()以及toString()  
+2. of()静态工厂方法  
+3. 全参数和无参数构造  
 
 ## 四、JsonUtil
 
-用于生成Json的工具类，特定情况下相比Gson的Json生成速度快20%,相比原生JSONObject快一倍。  
-并对内存进行了优化，减少GC。  
+用于生成Json的工具类，相比原生JSONObject快一倍。  
+并对内存进行了优化，减少对象创建，以减少GC。  
 注意，请采用链式调用，否则可能产生无法预料的结果。  
 
 eg:
