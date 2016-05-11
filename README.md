@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/Yumenokanata/Avocado.svg)](https://jitpack.io/#Yumenokanata/Avocado)
+
 # Avocado
 一个工具类的集合
 
