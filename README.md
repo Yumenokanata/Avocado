@@ -58,7 +58,7 @@ List<String> result = map.get(new DayDate(2015, 9, 15));
 
 ## 二、区域树容器
 
-目前是借用的(kevinjdolan/intervaltree)[https://github.com/kevinjdolan/intervaltree]的实现，并进行了一点扩展
+目前是借用的[kevinjdolan/intervaltree](https://github.com/kevinjdolan/intervaltree)的实现，并进行了一点扩展
 
 1、 DayDateIntervalTreeMultimap： DayDate区域容器
 
