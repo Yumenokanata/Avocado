@@ -157,6 +157,12 @@ public class DayDate implements Comparable<DayDate>, Parcelable, Serializable {
 
     // 0~6
     @IntRange(from = 0, to = 6)
+    public int getWhatDayIsIt() {
+        return whatDayIsIt(year, month + 1, day);
+    }
+
+    // 0~6
+    @IntRange(from = 0, to = 6)
     public static int whatDayIsIt(int year,
                                   @IntRange(from = 1, to = 12) int mouth,
                                   int day){
