@@ -1,6 +1,7 @@
 package indi.yume.tools.avocado.functional;
 
 import lombok.experimental.UtilityClass;
+import rx.functions.Func0;
 import rx.functions.Func1;
 
 /**
@@ -12,7 +13,11 @@ public class Utils {
         return t -> t;
     }
 
-    public static <P1, T> Func1<P1, T> constant(final T t) {
+    public static <P1, T> Func1<P1, T> constant1(final T t) {
         return p1 -> t;
+    }
+
+    public static <T> Func0<T> constant0(final T t) {
+        return () -> t;
     }
 }

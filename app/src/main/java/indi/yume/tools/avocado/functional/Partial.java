@@ -1,6 +1,7 @@
 package indi.yume.tools.avocado.functional;
 
 import lombok.experimental.UtilityClass;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.functions.Func3;
@@ -13,6 +14,11 @@ import rx.functions.Func6;
  */
 @UtilityClass
 public class Partial {
+    //(P1) -> R
+    public static <P1, R> Func0<R> part1(Func1<P1, R> f, final P1 p1) {
+        return () -> f.call(p1);
+    }
+
     //(P1, P2) -> R
     public static <P1, P2, R> Func1<P2, R> part1(Func2<P1, P2, R> f, final P1 p1) {
         return p2 -> f.call(p1, p2);
