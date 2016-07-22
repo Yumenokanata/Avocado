@@ -18,7 +18,9 @@ import java.util.Set;
 
 import indi.yume.tools.avocado.collect.RangeMultimap;
 import indi.yume.tools.avocado.collect.interval.IntervalTree;
+import indi.yume.tools.avocado.collect.interval.daydate.DayDateIntervalTreeMultimap;
 import indi.yume.tools.avocado.collect.interval.extension.TypeIntervalTree;
+import indi.yume.tools.avocado.model.DayDate;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.util.Timer;
 
@@ -153,5 +155,25 @@ public class RangeMapTest {
 //                .flatMap(Stream::of)
                 .count();
         timer.print("typeGetData: " + size + " | ");
+    }
+
+    public void testDateSet() {
+        DayDate startDay = new DayDate();
+        Random random = new Random(4);
+        final int sumDay = 360;
+        final int intervalDay = 30;
+
+        Set<DayDate> testData = new HashSet<>();
+        for(int i = 0; i < 999; i++) {
+            DayDate newDay = new DayDate(startDay);
+            newDay.addDay(random.nextInt(sumDay - intervalDay));
+            testData.add(newDay);
+        }
+
+        DayDateIntervalTreeMultimap<String> dayDateIntervalTreeMultimap = new DayDateIntervalTreeMultimap<>();
+
+        for(int i = 0; i < 60; i++) {
+
+        }
     }
 }
