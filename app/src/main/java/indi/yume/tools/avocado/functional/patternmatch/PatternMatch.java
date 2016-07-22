@@ -72,47 +72,47 @@ public class PatternMatch {
 
     //  ============== Void ===============
 
-    public static <T> Case<T, Void> c_pd(Func1<T, Boolean> predicate, Action1<T> action) {
+    public static <T> Case<T, Void> v_pd(Func1<T, Boolean> predicate, Action1<T> action) {
         return new Case<>(predicate, voidFun1(action));
     }
 
-    public static <T> Case<T, Void> c_eq(Object value, Action1<T> action) {
+    public static <T> Case<T, Void> v_eq(Object value, Action1<T> action) {
         Func1<T, Boolean> f = w -> Optional.ofNullable(value).map(v -> v.equals(w)).orElse(value == w);
         return new Case<>(f, voidFun1(action));
     }
 
-    public static <T, C extends T> Case<T, Void> c_is(Class<C> clazz, Action1<C> action) {
+    public static <T, C extends T> Case<T, Void> v_is(Class<C> clazz, Action1<C> action) {
         checkNotNull(clazz);
         checkNotNull(action);
         return new Case<>(clazz::isInstance, voidFun1(c -> action.call(cast(c))));
     }
 
-    public static <T, C extends T> Case<T, Void> c_nis(Class<C> clazz, Action1<C> action) {
+    public static <T, C extends T> Case<T, Void> v_nis(Class<C> clazz, Action1<C> action) {
         checkNotNull(clazz);
         checkNotNull(action);
         return new Case<>(o -> !clazz.isInstance(o), voidFun1(c -> action.call(cast(c))));
     }
 
-    public static <T> Case<T, Void> c_el(Action1<T> action) {
+    public static <T> Case<T, Void> v_el(Action1<T> action) {
         return new Case<>(Utils.const1(true), voidFun1(action));
     }
 
     /*
      * start <= value < end
      */
-    public static <T extends Comparable<T>, R> Case<T, Void> c_in(Comparable<T> start, Comparable<T> end, Action1<T> action) {
+    public static <T extends Comparable<T>, R> Case<T, Void> v_in(Comparable<T> start, Comparable<T> end, Action1<T> action) {
         return new Case<>(v -> start.compareTo(v) <= 0 && end.compareTo(v) > 0, voidFun1(action));
     }
 
-    public static <T> Case<T, Void> c_in(Iterable<T> iterable, Action1<T> action) {
+    public static <T> Case<T, Void> v_in(Iterable<T> iterable, Action1<T> action) {
         return new Case<>(n -> Iterables.contains(iterable, n), voidFun1(action));
     }
 
-    public static <T extends Comparable<T>, R> Case<T, Void> n_nin(Comparable<T> start, Comparable<T> end, Action1<T> action) {
+    public static <T extends Comparable<T>, R> Case<T, Void> v_nin(Comparable<T> start, Comparable<T> end, Action1<T> action) {
         return new Case<>(v -> start.compareTo(v) > 0 || end.compareTo(v) <= 0, voidFun1(action));
     }
 
-    public static <T> Case<T, Void> n_nin(Iterable<T> iterable, Action1<T> action) {
+    public static <T> Case<T, Void> v_nin(Iterable<T> iterable, Action1<T> action) {
         return new Case<>(n -> !Iterables.contains(iterable, n), voidFun1(action));
     }
 }
