@@ -2,6 +2,10 @@ package indi.yume.tools.avocado.reflect;
 
 import android.support.annotation.Nullable;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
+import com.google.common.collect.Lists;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,11 +22,28 @@ import java.util.Set;
 
 import indi.yume.tools.avocado.util.LogUtil;
 import indi.yume.tools.avocado.reflect.model.FieldEntity;
+import lombok.experimental.UtilityClass;
 
 /**
  * Created by yume on 15/8/25.
  */
+@UtilityClass
 public class ReflectUtil {
+    public static <S, T> void copyModel(S source, T target) {
+        Field[] sourceFieldList = getDeclaredFields(source.getClass());
+        Field[] targetFieldList = getDeclaredFields(target.getClass());
+
+        Stream.of(sourceFieldList)
+                .map(Field::getName)
+                .filter(field -> Stream.of(targetFieldList).map(Field::getName).anyMatch(name -> name.equals(field)))
+                .forEach(name -> copyField(source, target, name));
+    }
+
+    private static <S, T> void copyField(S source, T target, String fieldName) {
+        Optional.ofNullable(getObjectValue(source.getClass(), source, fieldName))
+                .ifPresent(value -> setObjectValue(target, target.getClass(), fieldName, value));
+    }
+
     public static <T> T setFiledAndValue(Map<String, Object> map, Class<T> clazz) throws IllegalAccessException, InstantiationException {
         return setFiledAndValue(map, clazz.newInstance(), clazz);
     }
@@ -252,7 +273,7 @@ public class ReflectUtil {
         return nameList;
     }
 
-    public static List<String> toIs(String fieldname) {
+    public static List<String> toIs(final String fieldname) {
         if (fieldname == null || fieldname.length() == 0) {
             return null;
         }
@@ -271,13 +292,12 @@ public class ReflectUtil {
         }
 
         /* Common situation */
-        fieldname = "is" + fieldname.substring(0, 1).toUpperCase() + fieldname.substring(1);
-        nameList.add(fieldname);
+        nameList.add("is" + fieldname.substring(0, 1).toUpperCase() + fieldname.substring(1));
 
         return nameList;
     }
 
-    public static List<String> toSetter(String fieldname) {
+    public static List<String> toSetter(final String fieldname) {
         if (fieldname == null || fieldname.length() == 0) {
             return null;
         }
@@ -292,8 +312,10 @@ public class ReflectUtil {
         }
 
         /* Common situation */
-        fieldname = "set" + fieldname.substring(0, 1).toUpperCase() + fieldname.substring(1);
-        nameList.add(fieldname);
+        nameList.add("set" + fieldname.substring(0, 1).toUpperCase() + fieldname.substring(1));
+
+        if(fieldname.startsWith("is"))
+            nameList.add(fieldname.replace("is", "set"));
 
         return nameList;
     }
