@@ -8,8 +8,11 @@ import org.junit.Test;
 import indi.yume.tools.avocado.functional.patternmatch.PatternMatch;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.model.tuple.Tuple3;
+import lombok.Data;
 import lombok.val;
+import rx.functions.Func1;
 
+import static indi.yume.tools.avocado.functional.Func.st;
 import static indi.yume.tools.avocado.functional.Utils.const1;
 import static indi.yume.tools.avocado.functional.ifexpression.IfExpression.if_;
 import static indi.yume.tools.avocado.functional.patternmatch.PatternMatch.*;
@@ -19,6 +22,40 @@ import static indi.yume.tools.avocado.functional.patternmatch.PatternMatch.*;
  */
 
 public class FunctionalWhenTest {
+
+    @Test
+    public void testExtension() {
+        TestMonad monad = st(TestMonad.unit(1))
+                .at(TestMonad::map, i -> i + 1)
+                .at(TestMonad::flatMap, i -> TestMonad.unit(i + 1))
+                .get();
+
+        System.out.println(monad.toString());
+
+        val monadFun = st(TestMonad::unit)
+                .at(TestMonad::map, i -> i + 1)
+                .at(TestMonad::flatMap, i -> TestMonad.unit(i + 1))
+                .get();
+
+        System.out.println(monadFun.call(1).toString());
+    }
+
+    @Data
+    public static class TestMonad {
+        private final Integer i;
+
+        public static TestMonad unit(int i) {
+            return new TestMonad(i);
+        }
+
+        public static TestMonad map(TestMonad monad, Func1<Integer, Integer> f) {
+            return new TestMonad(f.call(monad.getI()));
+        }
+
+        public static TestMonad flatMap(TestMonad monad, Func1<Integer, TestMonad> f) {
+            return f.call(monad.getI());
+        }
+    }
 
     @Test
     public void testGenerateCode_voidFun() {
