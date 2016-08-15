@@ -5,7 +5,7 @@ import com.annimon.stream.Stream;
 
 import org.junit.Test;
 
-import indi.yume.tools.avocado.functional.patternmatch.PatternMatch;
+import indi.yume.tools.avocado.functional.matching.CaseUtil;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.model.tuple.Tuple3;
 import lombok.Data;
@@ -15,7 +15,12 @@ import rx.functions.Func1;
 import static indi.yume.tools.avocado.functional.Func.st;
 import static indi.yume.tools.avocado.functional.Utils.const1;
 import static indi.yume.tools.avocado.functional.ifexpression.IfExpression.if_;
-import static indi.yume.tools.avocado.functional.patternmatch.PatternMatch.*;
+import static indi.yume.tools.avocado.functional.matching.Matcher.eq;
+import static indi.yume.tools.avocado.functional.matching.Matcher.in;
+import static indi.yume.tools.avocado.functional.matching.Matcher.is;
+import static indi.yume.tools.avocado.functional.matching.Matcher.pd;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by yume on 16-7-22.
@@ -97,31 +102,26 @@ public class FunctionalWhenTest {
     }
 
     @Test
-    public void testWhen() {
-        val f = new FModel();
+    public void testWhenCase() {
+        val f = (FModel) new S2Model();
 
-        Integer e = when(f,
-                c_pd(const1(false),
-                        i -> 4),
-                c_eq(new S2Model(),
-                        i -> 5),
-                c_is(SModel.class,
-                        const1(8)),
-                c_el(i -> 6));
+        Integer e = CaseUtil.when(f)
+                .case_(pd(const1(false)), 4)
+                .case_(eq(new S2Model()), i -> 5)
+                .case_(is(SModel.class), 8)
+                .el_get(6);
 
+        assertEquals((int)e, 5);
         System.out.println(e);
 
-        Integer d = when(3f,
-                c_pd(i -> i == 1,
-                        i -> 4),
-                c_eq(2f,
-                        i -> 5),
-                c_is(Float.class,
-                        const1(8)),
-                c_in(2f, 6f,
-                        i -> 7),
-                c_el(i -> 6));
+        Integer d = CaseUtil.when(3f)
+                .case_pd(i -> i == 1, 4)
+                .case_(eq(2f), i -> 5)
+                .case_(is(Float.class), const1(8))
+                .case_(in(2f, 6f), 7)
+                .el_get(6);
 
+        assertEquals((int)d, 8);
         System.out.println(d);
     }
 
@@ -129,6 +129,7 @@ public class FunctionalWhenTest {
 
     static class SModel extends FModel{}
 
+    @Data
     static class S2Model extends FModel{}
 
     static class SSModel extends SModel{}
