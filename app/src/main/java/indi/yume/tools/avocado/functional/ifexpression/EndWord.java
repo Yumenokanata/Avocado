@@ -1,5 +1,7 @@
 package indi.yume.tools.avocado.functional.ifexpression;
 
+import com.annimon.stream.Optional;
+
 import rx.functions.Func0;
 
 /**
@@ -15,5 +17,9 @@ public class EndWord<R> {
 
     public R get() {
         return action.call();
+    }
+
+    public Optional<R> getOptional() {
+        return Optional.ofNullable(action.call());
     }
 }

@@ -1,5 +1,7 @@
 package indi.yume.tools.avocado.functional.ifexpression;
 
+import com.annimon.stream.Optional;
+
 import rx.functions.Func0;
 import rx.functions.Func1;
 
@@ -16,5 +18,13 @@ public abstract class ControlWord<R> {
 
     public ElseIfWord<R> else_if(Boolean pred) {
         return else_if(const0(pred));
+    }
+
+    public R else_get(Func0<R> leftAction) {
+        return else_(leftAction).get();
+    }
+
+    public Optional<R> else_getOp(Func0<R> leftAction) {
+        return else_(leftAction).getOptional();
     }
 }

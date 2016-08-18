@@ -7,13 +7,17 @@ import rx.functions.Func0;
  */
 
 public class StartIfWord {
-    private final Func0<Boolean> pred;
+    private final boolean pred;
 
     public StartIfWord(Func0<Boolean> pred) {
+        this.pred = pred.call();
+    }
+
+    public StartIfWord(boolean pred) {
         this.pred = pred;
     }
 
     public <R> ControlWord<R> do_(Func0<R> rightAction) {
-        return pred.call() ? new RightWord<>(rightAction) : new LeftWord<R>();
+        return pred ? new RightWord<>(rightAction) : new LeftWord<R>();
     }
 }

@@ -1,5 +1,7 @@
 package indi.yume.tools.avocado.functional.matching;
 
+import com.annimon.stream.Optional;
+
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -44,6 +46,14 @@ public abstract class CaseWord<C, T> {
 
     public T el_get(T returnValue) {
         return else_(returnValue).get();
+    }
+
+    public Optional<T> el_getOp(Func1<C, T> action) {
+        return else_(action).getOptional();
+    }
+
+    public Optional<T> el_getOp(T returnValue) {
+        return else_(returnValue).getOptional();
     }
 
     @Data(staticConstructor = "unit")
