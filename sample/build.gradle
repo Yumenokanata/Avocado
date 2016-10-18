@@ -4,6 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'me.tatarka:gradle-retrolambda:3.2.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -13,6 +14,7 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'kotlin-android'
 
@@ -26,6 +28,8 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -46,8 +50,28 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile project(':app')
+    compile project(':avocado')
+    compile project(':avocado-functional')
+    compile project(':avocado-collect')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    compile 'org.funktionale:funktionale:0.8'
+
+    apt 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    compile 'com.aol.simplereact:cyclops-react:1.0.0-RC4'
+
+    compile 'org.apache.commons:commons-lang3:3.4'
+
+    compile "org.functionaljava:functionaljava:4.5"
+    compile 'com.googlecode.totallylazy:totallylazy:1.83'
+
+    compile "org.joda:joda-collect:0.7"
+    compile "joda-time:joda-time:2.9.3"
+
+    apt "org.projectlombok:lombok:1.16.6"
+    provided "org.projectlombok:lombok:1.16.6"
 
     androidTestCompile 'com.android.support:support-annotations:23.3.0'
     androidTestCompile 'com.android.support.test:runner:0.5'

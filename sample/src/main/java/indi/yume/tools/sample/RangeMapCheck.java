@@ -1,5 +1,7 @@
 package indi.yume.tools.sample;
 
+import android.util.TimingLogger;
+
 import com.annimon.stream.Stream;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -18,6 +20,9 @@ import indi.yume.tools.avocado.collect.interval.IntervalTree;
 import indi.yume.tools.avocado.collect.interval.extension.TypeIntervalTree;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.util.Timer;
+
+import static fj.data.Array.array;
+import static fj.data.List.iterableList;
 
 /**
  * Created by yume on 16-5-9.
@@ -49,10 +54,16 @@ public class RangeMapCheck {
     }
 
     public void testSum() {
+        TimingLogger logger = new TimingLogger("TAG", "testSum");
         testTypeInterval();
+        logger.addSplit("testTypeInterval");
         testRangeMap();
+        logger.addSplit("testRangeMap");
         testLongInterval();
+        logger.addSplit("testLongInterval");
         testForRange();
+        logger.addSplit("testForRange");
+        logger.dumpToLog();
 //        testStream();
     }
 
@@ -62,6 +73,13 @@ public class RangeMapCheck {
 
         timer.start();
         Multimap<Integer, Tuple2<Range<Integer>, String>> streamGetData = HashMultimap.create();
+
+        fj.data.List<Tuple2<Range<Integer>, String>> dataList = iterableList(testDataSet);
+        iterableList(testPointSet)
+                .foldLeft((sumSet, point) -> {
+                    sumSet.putAll(point, dataList.filter(model -> model.getData1().contains(point)));
+                    return sumSet;
+                }, streamGetData);
 
         for(Integer point : testPointSet)
             Stream.of(testDataSet)

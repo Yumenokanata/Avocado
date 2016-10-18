@@ -1,5 +1,6 @@
 package indi.yume.tools.sample
 
+import android.util.TimingLogger
 import com.annimon.stream.Stream
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
@@ -9,6 +10,8 @@ import indi.yume.tools.avocado.collect.interval.IntervalTree
 import indi.yume.tools.avocado.collect.interval.extension.TypeIntervalTree
 import indi.yume.tools.avocado.model.tuple.Tuple2
 import indi.yume.tools.avocado.util.Timer
+import org.funktionale.memoization.memoize
+import org.funktionale.partials.invoke
 import org.junit.Before
 import org.junit.Test
 import java.util.*
@@ -28,7 +31,7 @@ class RangeMapKotlinTest {
     fun doOnBefore() {
         val random = Random(3)
 
-        for (i in 0..2999) {
+        for (i in 0..3999) {
             val range = Math.abs(random.nextInt())
             val maxRange = min + range + random.nextInt(max - min)
             val minRange = maxRange - range
@@ -36,9 +39,24 @@ class RangeMapKotlinTest {
                     String.format(Locale.getDefault(), "%s: %d-%d", prefixString, minRange, maxRange)))
         }
 
-        for (i in 0..9) {
+        for (i in 0..299) {
             testPointSet.add(min + random.nextInt(max - min))
         }
+    }
+
+    @Test
+    fun testSum() {
+        val logger = TimingLogger("TAG", "testSum")
+        testTypeInterval()
+        logger.addSplit("testTypeInterval")
+        testRangeMap()
+        logger.addSplit("testRangeMap")
+        testLongInterval()
+        logger.addSplit("testLongInterval")
+        testForRange()
+        logger.addSplit("testForRange")
+        logger.dumpToLog()
+        //        testStream();
     }
 
     @Test
@@ -125,5 +143,51 @@ class RangeMapKotlinTest {
         timer.stop()
         val size = typeGetData.values().size
         timer.print("typeGetData: $size | ")
+    }
+
+    @Test
+    fun testFunction() {
+        val timer = Timer()
+
+        timer.start()
+        val streamGetData = HashMultimap.create<Int, Tuple2<Range<Int>, String>>()
+
+        val filterFun = { point:Int, model: Tuple2<Range<Int>, String> -> model.data1.contains(point) }
+        val allListFun = Iterable<Tuple2<Range<Int>, String>>::filter.invoke(testDataSet)
+        val checkAndGetFun = { point: Int -> Pair(point, allListFun(filterFun.invoke(p1 = point))) }.memoize()
+
+        val putAllFun: (HashMultimap<Int, Tuple2<Range<Int>, String>>, Pair<Int, List<Tuple2<Range<Int>, String>>>) -> Unit =
+                { sumData, item -> streamGetData.putAll(item.first, item.second) }
+        val bindPutAllFun = putAllFun(p1 = streamGetData).memoize()
+
+        testPointSet.map(checkAndGetFun)
+                .forEach(bindPutAllFun)
+
+//        testPointSet.fold(streamGetData,
+//                {sumData, point ->
+//                    sumData.putAll(point, testDataSet.filter(filterFun(p1 = point)))
+//                    sumData
+//                })
+
+//        for (point in testPointSet)
+//            testDataSet.filter { !it.data1.contains(point) }.forEach { streamGetData.put(point, it) }
+
+        timer.stopAndPrint("testFunction : " + streamGetData.size() + " | ")
+    }
+
+    @Test
+    fun testStreamK() {
+        val timer = Timer()
+
+        timer.start()
+        val streamGetData = HashMultimap.create<Int, Tuple2<Range<Int>, String>>()
+
+        testPointSet.fold(streamGetData,
+                {sumData, point ->
+                    sumData.putAll(point, testDataSet.filter { !it.data1.contains(point) })
+                    sumData
+                })
+
+        timer.stopAndPrint("testStreamK : " + streamGetData.size() + " | ")
     }
 }

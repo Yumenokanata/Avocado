@@ -1,1 +1,1 @@
-include ':app', ':sample'
+include ':avocado', ':sample', ':avocado-collect', ':avocado-functional'
