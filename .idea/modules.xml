@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/avocado/avocado.iml" filepath="$PROJECT_DIR$/avocado/avocado.iml" />
       <module fileurl="file://$PROJECT_DIR$/avocado-collect/avocado-collect.iml" filepath="$PROJECT_DIR$/avocado-collect/avocado-collect.iml" />
       <module fileurl="file://$PROJECT_DIR$/avocado-functional/avocado-functional.iml" filepath="$PROJECT_DIR$/avocado-functional/avocado-functional.iml" />
+      <module fileurl="file://$PROJECT_DIR$/avocado-funktional/avocado-funktional.iml" filepath="$PROJECT_DIR$/avocado-funktional/avocado-funktional.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
     </modules>
   </component>

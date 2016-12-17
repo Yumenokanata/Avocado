@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.1-2'
+    ext.kotlin_version = '1.0.5-3'
     repositories {
         mavenCentral()
     }
@@ -19,13 +19,13 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "indi.yume.tools.sample"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 
@@ -64,7 +64,7 @@ dependencies {
 
     compile 'org.apache.commons:commons-lang3:3.4'
 
-    compile "org.functionaljava:functionaljava:4.5"
+    compile "org.functionaljava:functionaljava:4.6"
     compile 'com.googlecode.totallylazy:totallylazy:1.83'
 
     compile "org.joda:joda-collect:0.7"
