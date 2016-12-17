@@ -1,5 +1,5 @@
 @file:JvmName("DoUtil")
-package indi.yume.tools.avocado.doexp
+package indi.yume.tools.avocado.funktional.doexp
 
 import rx.Observable
 

@@ -2,7 +2,7 @@ package indi.yume.tools.avocado;
 
 import org.junit.Test;
 
-import indi.yume.tools.avocado.doexp.DoUtil;
+import indi.yume.tools.avocado.funktional.doexp.DoUtil;
 import rx.Observable;
 
 /**
