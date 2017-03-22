@@ -43,6 +43,6 @@ dependencies {
     compile project(':avocado')
     compile 'com.google.guava:guava:20.0'
 
-    apt "org.projectlombok:lombok:1.16.6"
-    provided "org.projectlombok:lombok:1.16.6"
+    apt "org.projectlombok:lombok:1.16.14"
+    provided "org.projectlombok:lombok:1.16.14"
 }

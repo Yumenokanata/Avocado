@@ -1,5 +1,5 @@
 @file:JvmName("DoOptionUtil")
-package indi.yume.tools.avocado.funktional.doexp
+package indi.yume.tools.avocado.funktional.doexp.optional
 
 import com.annimon.stream.Optional
 

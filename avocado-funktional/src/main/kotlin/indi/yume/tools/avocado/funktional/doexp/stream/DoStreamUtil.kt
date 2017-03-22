@@ -1,5 +1,5 @@
 @file:JvmName("DoStreamUtil")
-package indi.yume.tools.avocado.funktional.doexp
+package indi.yume.tools.avocado.funktional.doexp.stream
 
 import com.annimon.stream.Stream
 

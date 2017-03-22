@@ -220,4 +220,19 @@ public class FunctionalWhenTest {
                 .return_123((t1, t2, t3) -> t1 + t2 + t3)
                 .ifPresent(System.out::println);
     }
+
+    public Integer sum(List<Integer> ints) {
+        return match(ints)
+                .empty(() -> 0)
+                .matchF((x, xs) -> x + sum(xs))
+                .el_get(0);
+    }
+
+    public Double product(List<Double> ds) {
+        return match(ds)
+                .empty(() -> 1.0)
+                .matchF(0.0, xs -> 0.0)
+                .matchF((x, xs) -> x * product(xs))
+                .el_get(0.0);
+    }
 }

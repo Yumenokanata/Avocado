@@ -4,12 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import indi.yume.tools.avocado.reflect.ReflectUtil;
-import indi.yume.tools.avocado.util.LogUtil;
 import indi.yume.tools.avocado.util.Timer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,20 +13,16 @@ import lombok.NoArgsConstructor;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Bind(R.id.text_view)
-    TextView textView;
-    @Bind(R.id.java_button)
     Button javaButton;
-    @Bind(R.id.kotlin_button)
     Button kotlinButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
 
-        LogUtil.m("");
+        javaButton = (Button) findViewById(R.id.java_button);
+        kotlinButton = (Button) findViewById(R.id.kotlin_button);
 
         javaButton.setOnClickListener(new View.OnClickListener() {
             @Override
