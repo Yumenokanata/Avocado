@@ -1,11 +1,14 @@
 package indi.yume.tools.avocado.collect;
 
+import android.support.annotation.Nullable;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import indi.yume.tools.avocado.model.Provider1;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
-import rx.functions.Func2;
+import indi.yume.tools.avocado.util.LogUtil;
+import io.reactivex.functions.BiFunction;
 
 /**
  * Created by yume on 16-5-16.
@@ -47,12 +50,12 @@ public class PLazyList<T> {
             return new PLazyList<>((Provider1<Tuple2<T, Object>>) data.getData2());
     }
 
-    public <K> K fold(int n, K set, Func2<K, T, K> fun) {
-        return n == 0 || isEmpty() ? set : tail().fold(n - 1, fun.call(set, head()), fun);
+    public <K> K fold(int n, K set, BiFunction<K, T, K> fun) {
+        return n == 0 || isEmpty() ? set : tail().fold(n - 1, runSafe(fun, set, head()), fun);
     }
 
-    public <K> K foldAll(K set, Func2<K, T, K> fun) {
-        return isEmpty() ? set : tail().foldAll(fun.call(set, head()), fun);
+    public <K> K foldAll(K set, BiFunction<K, T, K> fun) {
+        return isEmpty() ? set : tail().foldAll(runSafe(fun, set, head()), fun);
     }
 
     public List<T> take(int n) {
@@ -74,5 +77,15 @@ public class PLazyList<T> {
 
     public List<T> toList() {
         return takeAll();
+    }
+
+    @Nullable
+    private static <T1, T2, B> B runSafe(BiFunction<T1, T2, B> fun, T1 t1, T2 t2) {
+        try {
+            return fun.apply(t1, t2);
+        } catch (Exception e) {
+            LogUtil.e(e);
+            return null;
+        }
     }
 }

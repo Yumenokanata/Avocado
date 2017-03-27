@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import indi.yume.tools.avocado.functional.Memoization;
 import lombok.val;
-import rx.functions.Func1;
+import io.reactivex.functions.Function;
 
 /**
  * Created by yume on 16-7-13.
@@ -12,18 +12,18 @@ import rx.functions.Func1;
 
 public class MemoziedTest {
     @Test
-    public void testMemozied() {
-        Func1<Integer, String> fun = MemoziedTest::functionTest;
-        Func1<Integer, String> mFun = Memoization.memoize(fun);
+    public void testMemozied() throws  Exception {
+        Function<Integer, String> fun = MemoziedTest::functionTest;
+        Function<Integer, String> mFun = Memoization.memoize(fun);
 
         testFun(fun);
         testFun(mFun);
     }
 
-    private static void testFun(Func1<Integer, String> f) {
+    private static void testFun(Function<Integer, String> f) throws Exception {
         val start = System.currentTimeMillis();
         for(int i = 0; i < 10; i++)
-            System.out.println(f.call(2));
+            System.out.println(f.apply(2));
         val end = System.currentTimeMillis();
 
         System.out.println("Spend time: " + (end - start));

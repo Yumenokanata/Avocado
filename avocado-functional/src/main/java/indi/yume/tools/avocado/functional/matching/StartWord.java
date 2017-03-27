@@ -1,8 +1,9 @@
 package indi.yume.tools.avocado.functional.matching;
 
+import indi.yume.tools.avocado.functional.FuncUtils;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import lombok.Data;
-import rx.functions.Func1;
+import io.reactivex.functions.Function;
 
 /**
  * Created by yume on 16-8-15.
@@ -12,31 +13,31 @@ public class StartWord<C> {
     private final C checkValue;
 
     public <W, T> CaseWord<C, T> case_(
-            Func1<C, Tuple2<Boolean, W>> matcher,
-            Func1<W, T> action) {
-        final Tuple2<Boolean, W> data = matcher.call(checkValue);
+            Function<C, Tuple2<Boolean, W>> matcher,
+            Function<W, T> action) {
+        final Tuple2<Boolean, W> data = FuncUtils.runUnsafe(matcher, checkValue);
 
         if(data.getData1())
-            return CaseWord.RightCase.unit(checkValue, action.call(data.getData2()));
+            return CaseWord.RightCase.unit(checkValue, FuncUtils.runUnsafe(action, data.getData2()));
 
         return CaseWord.LeftCase.unit(checkValue);
     }
 
     public <T> CaseWord<C, T> case_pd(
-            Func1<C, Boolean> matcher,
-            Func1<C, T> action) {
-        return case_(v -> Tuple2.<Boolean, C>of(matcher.call(v), v), action);
+            Function<C, Boolean> matcher,
+            Function<C, T> action) {
+        return case_(v -> Tuple2.<Boolean, C>of(matcher.apply(v), v), action);
     }
 
     public <W, T> CaseWord<C, T> case_(
-            Func1<C, Tuple2<Boolean, W>> matcher,
+            Function<C, Tuple2<Boolean, W>> matcher,
             T returnValue) {
         return case_(matcher, w -> returnValue);
     }
 
     public <T> CaseWord<C, T> case_pd(
-            Func1<C, Boolean> matcher,
+            Function<C, Boolean> matcher,
             T returnValue) {
-        return case_(v -> Tuple2.<Boolean, C>of(matcher.call(v), v), w -> returnValue);
+        return case_(v -> Tuple2.<Boolean, C>of(matcher.apply(v), v), w -> returnValue);
     }
 }

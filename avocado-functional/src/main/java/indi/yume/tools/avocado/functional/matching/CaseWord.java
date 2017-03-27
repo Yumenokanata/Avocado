@@ -2,10 +2,11 @@ package indi.yume.tools.avocado.functional.matching;
 
 import com.annimon.stream.Optional;
 
+import indi.yume.tools.avocado.functional.FuncUtils;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
+import io.reactivex.functions.Function;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import rx.functions.Func1;
 
 /**
  * Created by yume on 16-8-15.
@@ -13,34 +14,34 @@ import rx.functions.Func1;
 
 public abstract class CaseWord<C, T> {
     public abstract <W> CaseWord<C, T> case_(
-            Func1<C, Tuple2<Boolean, W>> matcher,
-            Func1<W, T> action);
+            Function<C, Tuple2<Boolean, W>> matcher,
+            Function<W, T> action);
 
-    public abstract EndCase<T> else_(Func1<C, T> action);
+    public abstract EndCase<T> else_(Function<C, T> action);
 
     public CaseWord<C, T> case_pd(
-            Func1<C, Boolean> matcher,
-            Func1<C, T> action) {
-        return case_(v -> Tuple2.<Boolean, C>of(matcher.call(v), v), action);
+            Function<C, Boolean> matcher,
+            Function<C, T> action) {
+        return case_(v -> Tuple2.<Boolean, C>of(matcher.apply(v), v), action);
     }
 
     public <W> CaseWord<C, T> case_(
-            Func1<C, Tuple2<Boolean, W>> matcher,
+            Function<C, Tuple2<Boolean, W>> matcher,
             T returnValue) {
         return case_(matcher, w -> returnValue);
     }
 
     public CaseWord<C, T> case_pd(
-            Func1<C, Boolean> matcher,
+            Function<C, Boolean> matcher,
             T returnValue) {
-        return case_(v -> Tuple2.<Boolean, C>of(matcher.call(v), v), w -> returnValue);
+        return case_(v -> Tuple2.<Boolean, C>of(matcher.apply(v), v), w -> returnValue);
     }
 
     public EndCase<T> else_(T returnValue) {
         return else_(c -> returnValue);
     }
 
-    public T el_get(Func1<C, T> action) {
+    public T el_get(Function<C, T> action) {
         return else_(action).get();
     }
 
@@ -48,7 +49,7 @@ public abstract class CaseWord<C, T> {
         return else_(returnValue).get();
     }
 
-    public Optional<T> el_getOp(Func1<C, T> action) {
+    public Optional<T> el_getOp(Function<C, T> action) {
         return else_(action).getOptional();
     }
 
@@ -63,19 +64,19 @@ public abstract class CaseWord<C, T> {
 
         @Override
         public <W> CaseWord<C, T> case_(
-                Func1<C, Tuple2<Boolean, W>> matcher,
-                Func1<W, T> action) {
-            final Tuple2<Boolean, W> data = matcher.call(checkValue);
+                Function<C, Tuple2<Boolean, W>> matcher,
+                Function<W, T> action) {
+            final Tuple2<Boolean, W> data = FuncUtils.runUnsafe(matcher, checkValue);
 
             if(data.getData1())
-                return RightCase.unit(checkValue, action.call(data.getData2()));
+                return RightCase.unit(checkValue, FuncUtils.runUnsafe(action, data.getData2()));
 
             return this;
         }
 
         @Override
-        public EndCase<T> else_(Func1<C, T> action) {
-            return new EndCase<>(action.call(checkValue));
+        public EndCase<T> else_(Function<C, T> action) {
+            return new EndCase<>(FuncUtils.runUnsafe(action, checkValue));
         }
     }
 
@@ -87,13 +88,13 @@ public abstract class CaseWord<C, T> {
 
         @Override
         public <W> CaseWord<C, T> case_(
-                Func1<C, Tuple2<Boolean, W>> matcher,
-                Func1<W, T> action) {
+                Function<C, Tuple2<Boolean, W>> matcher,
+                Function<W, T> action) {
             return this;
         }
 
         @Override
-        public EndCase<T> else_(Func1<C, T> action) {
+        public EndCase<T> else_(Function<C, T> action) {
             return new EndCase<>(returnValue);
         }
     }

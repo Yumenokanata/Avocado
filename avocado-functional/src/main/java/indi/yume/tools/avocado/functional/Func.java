@@ -1,14 +1,15 @@
 package indi.yume.tools.avocado.functional;
 
+import com.annimon.stream.function.ThrowableSupplier;
+
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Function3;
+import io.reactivex.functions.Function4;
+import io.reactivex.functions.Function5;
+import io.reactivex.functions.Function6;
 import lombok.Data;
 import lombok.experimental.UtilityClass;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
 
 import static indi.yume.tools.avocado.functional.Composition.andThen;
 
@@ -25,103 +26,115 @@ public class Func {
     public static class StartFunOp<T> {
         private final T startData;
 
-        public <R> UnitFuncOp<R> at(Func1<T, R> f) {
-            return new UnitFuncOp<>(() -> f.call(startData));
+        public <R> UnitFuncOp<R> at(Function<T, R> f) {
+            return new UnitFuncOp<>(() -> f.apply(startData));
         }
 
-        public <P1, R> UnitFuncOp<R> at(Func2<T, P1, R> f, P1 p1) {
-            return new UnitFuncOp<>(() -> f.call(startData, p1));
+        public <P1, R> UnitFuncOp<R> at(BiFunction<T, P1, R> f, P1 p1) {
+            return new UnitFuncOp<>(() -> f.apply(startData, p1));
         }
 
-        public <P1, P2, R> UnitFuncOp<R> at(Func3<T, P1, P2, R> f, P1 p1, P2 p2) {
-            return new UnitFuncOp<>(() -> f.call(startData, p1, p2));
+        public <P1, P2, R> UnitFuncOp<R> at(Function3<T, P1, P2, R> f, P1 p1, P2 p2) {
+            return new UnitFuncOp<>(() -> f.apply(startData, p1, p2));
         }
 
-        public <P1, P2, P3, R> UnitFuncOp<R> at(Func4<T, P1, P2, P3, R> f, P1 p1, P2 p2, P3 p3) {
-            return new UnitFuncOp<>(() -> f.call(startData, p1, p2, p3));
+        public <P1, P2, P3, R> UnitFuncOp<R> at(Function4<T, P1, P2, P3, R> f, P1 p1, P2 p2, P3 p3) {
+            return new UnitFuncOp<>(() -> f.apply(startData, p1, p2, p3));
         }
 
-        public <P1, P2, P3, P4, R> UnitFuncOp<R> at(Func5<T, P1, P2, P3, P4, R> f, P1 p1, P2 p2, P3 p3, P4 p4) {
-            return new UnitFuncOp<>(() -> f.call(startData, p1, p2, p3, p4));
+        public <P1, P2, P3, P4, R> UnitFuncOp<R> at(Function5<T, P1, P2, P3, P4, R> f, P1 p1, P2 p2, P3 p3, P4 p4) {
+            return new UnitFuncOp<>(() -> f.apply(startData, p1, p2, p3, p4));
         }
 
-        public <P1, P2, P3, P4, P5, R> UnitFuncOp<R> at(Func6<T, P1, P2, P3, P4, P5, R> f, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
-            return new UnitFuncOp<>(() -> f.call(startData, p1, p2, p3, p4, p5));
+        public <P1, P2, P3, P4, P5, R> UnitFuncOp<R> at(Function6<T, P1, P2, P3, P4, P5, R> f, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
+            return new UnitFuncOp<>(() -> f.apply(startData, p1, p2, p3, p4, p5));
         }
     }
 
     public static class UnitFuncOp<T> {
-        private final Func0<T> act;
+        private final ThrowableSupplier<T, Exception> act;
 
-        private UnitFuncOp(Func0<T> act) {
+        private UnitFuncOp(ThrowableSupplier<T, Exception> act) {
             this.act = act;
         }
 
-        public <R> UnitFuncOp<R> at(Func1<T, R> f) {
-            return new UnitFuncOp<>(() -> f.call(act.call()));
+        public <R> UnitFuncOp<R> at(Function<T, R> f) {
+            return new UnitFuncOp<>(() -> f.apply(act.get()));
         }
 
-        public <P1, R> UnitFuncOp<R> at(Func2<T, P1, R> f, P1 p1) {
-            return new UnitFuncOp<>(() -> f.call(act.call(), p1));
+        public <P1, R> UnitFuncOp<R> at(BiFunction<T, P1, R> f, P1 p1) {
+            return new UnitFuncOp<>(() -> f.apply(act.get(), p1));
         }
 
-        public <P1, P2, R> UnitFuncOp<R> at(Func3<T, P1, P2, R> f, P1 p1, P2 p2) {
-            return new UnitFuncOp<>(() -> f.call(act.call(), p1, p2));
+        public <P1, P2, R> UnitFuncOp<R> at(Function3<T, P1, P2, R> f, P1 p1, P2 p2) {
+            return new UnitFuncOp<>(() -> f.apply(act.get(), p1, p2));
         }
 
-        public <P1, P2, P3, R> UnitFuncOp<R> at(Func4<T, P1, P2, P3, R> f, P1 p1, P2 p2, P3 p3) {
-            return new UnitFuncOp<>(() -> f.call(act.call(), p1, p2, p3));
+        public <P1, P2, P3, R> UnitFuncOp<R> at(Function4<T, P1, P2, P3, R> f, P1 p1, P2 p2, P3 p3) {
+            return new UnitFuncOp<>(() -> f.apply(act.get(), p1, p2, p3));
         }
 
-        public <P1, P2, P3, P4, R> UnitFuncOp<R> at(Func5<T, P1, P2, P3, P4, R> f, P1 p1, P2 p2, P3 p3, P4 p4) {
-            return new UnitFuncOp<>(() -> f.call(act.call(), p1, p2, p3, p4));
+        public <P1, P2, P3, P4, R> UnitFuncOp<R> at(Function5<T, P1, P2, P3, P4, R> f, P1 p1, P2 p2, P3 p3, P4 p4) {
+            return new UnitFuncOp<>(() -> f.apply(act.get(), p1, p2, p3, p4));
         }
 
-        public <P1, P2, P3, P4, P5, R> UnitFuncOp<R> at(Func6<T, P1, P2, P3, P4, P5, R> f, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
-            return new UnitFuncOp<>(() -> f.call(act.call(), p1, p2, p3, p4, p5));
+        public <P1, P2, P3, P4, P5, R> UnitFuncOp<R> at(Function6<T, P1, P2, P3, P4, P5, R> f, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
+            return new UnitFuncOp<>(() -> f.apply(act.get(), p1, p2, p3, p4, p5));
         }
 
-        public T get() {
-            return act.call();
+        public T get() throws RuntimeException {
+            try {
+                return act.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public T getOr(T defaultValue) {
+            try {
+                return act.get();
+            } catch (Exception e) {
+                return defaultValue;
+            }
         }
     }
 
-    public static <T, R> FuncOp<T, R> st(Func1<T, R> f) {
+    public static <T, R> FuncOp<T, R> st(Function<T, R> f) {
         return new FuncOp<>(f);
     }
 
     public static class FuncOp<T, R> {
-        private final Func1<T, R> act;
+        private final Function<T, R> act;
 
-        private FuncOp(Func1<T, R> act) {
+        private FuncOp(Function<T, R> act) {
             this.act = act;
         }
 
-        public <P> FuncOp<T, P> at(Func1<R, P> f) {
+        public <P> FuncOp<T, P> at(Function<R, P> f) {
             return new FuncOp<>(andThen(act, f));
         }
 
-        public <P1, P> FuncOp<T, P> at(Func2<R, P1, P> f, P1 p1) {
-            return new FuncOp<>(t -> f.call(act.call(t), p1));
+        public <P1, P> FuncOp<T, P> at(BiFunction<R, P1, P> f, P1 p1) {
+            return new FuncOp<>(t -> f.apply(act.apply(t), p1));
         }
 
-        public <P1, P2, P> FuncOp<T, P> at(Func3<R, P1, P2, P> f, P1 p1, P2 p2) {
-            return new FuncOp<>(t -> f.call(act.call(t), p1, p2));
+        public <P1, P2, P> FuncOp<T, P> at(Function3<R, P1, P2, P> f, P1 p1, P2 p2) {
+            return new FuncOp<>(t -> f.apply(act.apply(t), p1, p2));
         }
 
-        public <P1, P2, P3, P> FuncOp<T, P> at(Func4<R, P1, P2, P3, P> f, P1 p1, P2 p2, P3 p3) {
-            return new FuncOp<>(t -> f.call(act.call(t), p1, p2, p3));
+        public <P1, P2, P3, P> FuncOp<T, P> at(Function4<R, P1, P2, P3, P> f, P1 p1, P2 p2, P3 p3) {
+            return new FuncOp<>(t -> f.apply(act.apply(t), p1, p2, p3));
         }
 
-        public <P1, P2, P3, P4, P> FuncOp<T, P> at(Func5<R, P1, P2, P3, P4, P> f, P1 p1, P2 p2, P3 p3, P4 p4) {
-            return new FuncOp<>(t -> f.call(act.call(t), p1, p2, p3, p4));
+        public <P1, P2, P3, P4, P> FuncOp<T, P> at(Function5<R, P1, P2, P3, P4, P> f, P1 p1, P2 p2, P3 p3, P4 p4) {
+            return new FuncOp<>(t -> f.apply(act.apply(t), p1, p2, p3, p4));
         }
 
-        public <P1, P2, P3, P4, P5, P> FuncOp<T, P> at(Func6<R, P1, P2, P3, P4, P5, P> f, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
-            return new FuncOp<>(t -> f.call(act.call(t), p1, p2, p3, p4, p5));
+        public <P1, P2, P3, P4, P5, P> FuncOp<T, P> at(Function6<R, P1, P2, P3, P4, P5, P> f, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) {
+            return new FuncOp<>(t -> f.apply(act.apply(t), p1, p2, p3, p4, p5));
         }
 
-        public Func1<T, R> get() {
+        public Function<T, R> get() {
             return act;
         }
     }

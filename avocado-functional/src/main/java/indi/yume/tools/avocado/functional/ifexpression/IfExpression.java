@@ -1,17 +1,17 @@
 package indi.yume.tools.avocado.functional.ifexpression;
 
+import com.annimon.stream.function.Supplier;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import rx.functions.Func0;
 
 /**
  * Created by yume on 16-7-22.
  */
 
 public class IfExpression {
-    public static StartIfWord if_(Func0<Boolean> pred) {
+    public static StartIfWord if_(Supplier<Boolean> pred) {
         return new StartIfWord(pred);
     }
 

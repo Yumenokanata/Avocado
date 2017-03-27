@@ -1,6 +1,6 @@
 package indi.yume.tools.avocado.functional.ifexpression;
 
-import rx.functions.Func0;
+import com.annimon.stream.function.Supplier;
 
 /**
  * Created by yume on 16-7-22.
@@ -9,15 +9,15 @@ import rx.functions.Func0;
 public class StartIfWord {
     private final boolean pred;
 
-    public StartIfWord(Func0<Boolean> pred) {
-        this.pred = pred.call();
+    public StartIfWord(Supplier<Boolean> pred) {
+        this.pred = pred.get();
     }
 
     public StartIfWord(boolean pred) {
         this.pred = pred;
     }
 
-    public <R> ControlWord<R> do_(Func0<R> rightAction) {
-        return pred ? new RightWord<>(rightAction) : new LeftWord<R>();
+    public <R> ControlWord<R> do_(Supplier<R> rightAction) {
+        return pred ? new RightWord<>(rightAction) : new LeftWord<>();
     }
 }

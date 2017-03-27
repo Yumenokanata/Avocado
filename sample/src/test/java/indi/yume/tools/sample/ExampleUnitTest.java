@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 import static org.junit.Assert.*;
 
@@ -19,9 +19,9 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        Observable<Long> values = Observable.interval(500, TimeUnit.MILLISECONDS);
+        Flowable<Long> values = Flowable.interval(500, TimeUnit.MILLISECONDS);
 
-        Future<Long> future = values.take(5).toBlocking().toFuture();
+        Future<Long> future = values.take(5).toFuture();
 
 
 //        Iterable<Long> iterable = values.take(5).toBlocking().toIterable();

@@ -2,24 +2,24 @@ package indi.yume.tools.avocado.functional.ifexpression;
 
 import com.annimon.stream.Optional;
 
-import rx.functions.Func0;
+import com.annimon.stream.function.Supplier;
 
 /**
  * Created by yume on 16-7-22.
  */
 
 public class EndWord<R> {
-    private final Func0<R> action;
+    private final Supplier<R> action;
 
-    public EndWord(Func0<R> action) {
+    public EndWord(Supplier<R> action) {
         this.action = action;
     }
 
     public R get() {
-        return action.call();
+        return action.get();
     }
 
     public Optional<R> getOptional() {
-        return Optional.ofNullable(action.call());
+        return Optional.ofNullable(action.get());
     }
 }

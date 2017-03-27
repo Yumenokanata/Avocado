@@ -1,6 +1,6 @@
 package indi.yume.tools.avocado.functional.ifexpression;
 
-import rx.functions.Func0;
+import com.annimon.stream.function.Supplier;
 
 import static indi.yume.tools.avocado.util.ObjectUtil.checkNotNull;
 
@@ -9,20 +9,20 @@ import static indi.yume.tools.avocado.util.ObjectUtil.checkNotNull;
  */
 
 public class RightWord<R> extends ControlWord<R> {
-    private final Func0<R> action;
+    private final Supplier<R> action;
 
-    public RightWord(Func0<R> action) {
+    public RightWord(Supplier<R> action) {
         checkNotNull(action);
         this.action = action;
     }
 
     @Override
-    public EndWord<R> else_(Func0<R> leftAction) {
+    public EndWord<R> else_(Supplier<R> leftAction) {
         return new EndWord<>(action);
     }
 
     @Override
-    public ElseIfWord<R> else_if(Func0<Boolean> pred) {
+    public ElseIfWord<R> else_if(Supplier<Boolean> pred) {
         return rightAction -> new RightWord<>(action);
     }
 }

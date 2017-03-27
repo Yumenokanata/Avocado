@@ -1,26 +1,23 @@
 package indi.yume.tools.avocado.util;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Created by yume on 15/11/5.
  */
 public class RxBus {
-    private Subject<Object, Object> bus = new SerializedSubject<>(PublishSubject.create());
+    private Subject<Object> bus = PublishSubject.create().toSerialized();
 
     private static RxBus rxBus;
     private RxBus(){}
 
-    public static RxBus getInstance(){
+    public static synchronized RxBus getInstance(){
         if(rxBus == null)
-            synchronized (RxBus.class){
-                if(rxBus == null)
-                    rxBus = new RxBus();
-            }
+            rxBus = new RxBus();
         return rxBus;
     }
 
@@ -28,11 +25,16 @@ public class RxBus {
         bus.onNext(event);
     }
 
-    public <T> Observable<T> toObservable(Class<T> clazz){
-        return bus.asObservable()
-                .filter(o -> clazz.getName().equals(o.getClass().getName()))
+    public <T> Flowable<T> toObservable(Class<T> clazz){
+        return bus.toFlowable(BackpressureStrategy.BUFFER)
+                .filter(o -> clazz.isInstance(o))
                 .cast(clazz)
                 .doOnError(LogUtil::e)
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public <T> Flowable<T> toMainObservable(Class<T> clazz){
+        return toObservable(clazz)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

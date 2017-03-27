@@ -1,6 +1,7 @@
 package indi.yume.tools.avocado.string;
 
-import rx.functions.Action1;
+import indi.yume.tools.avocado.util.LogUtil;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by yume on 16-3-19.
@@ -15,7 +16,7 @@ import rx.functions.Action1;
  *              .add("key2", 1.0)
  *              .add("key3", -1200l)
  *              .add("key4", "object test")
- *              .addArray("key6", new Action1<JsonUtil.JsonArrayBuilder>() {
+ *              .addArray("key6", new io.reactivex.functions.Consumer<JsonUtil.JsonArrayBuilder>() {
  *                                          @Override
  *                                          public void call(JsonUtil.JsonArrayBuilder value) {
  *                                              value.add(false)
@@ -23,7 +24,7 @@ import rx.functions.Action1;
  *                                                      .add(-199l)
  *                                                      .add("array object test")
  *                                                      .add(new TestModel())
- *                                                      .addJson(new Action1<JsonUtil.JsonBuilder>() {
+ *                                                      .addJson(new io.reactivex.functions.Consumer<JsonUtil.JsonBuilder>() {
  *                                                              @Override
  *                                                              public void call(JsonUtil.JsonBuilder value) {
  *                                                                  value.add("sub key", "sub object");
@@ -104,17 +105,17 @@ public class JsonUtil {
             return this;
         }
 
-        public JsonArrayBuilder addArray(Action1<JsonArrayBuilder> doForArray) {
+        public JsonArrayBuilder addArray(Consumer<JsonArrayBuilder> doForArray) {
             JsonArrayBuilder arrayBuilder = getInnerArrayBuilder();
-            doForArray.call(arrayBuilder);
+            runSafe(doForArray, arrayBuilder);
             arrayBuilder.close();
             json.append(divider);
             return this;
         }
 
-        public JsonArrayBuilder addJson(Action1<JsonBuilder> doForJson) {
+        public JsonArrayBuilder addJson(Consumer<JsonBuilder> doForJson) {
             JsonBuilder jsonBuilder = getInnerJsonBuilder();
-            doForJson.call(jsonBuilder);
+            runSafe(doForJson, jsonBuilder);
             jsonBuilder.close();
             json.append(divider);
             return this;
@@ -211,25 +212,25 @@ public class JsonUtil {
             return this;
         }
 
-        public JsonBuilder addArray(String key, Action1<JsonArrayBuilder> doForArray) {
+        public JsonBuilder addArray(String key, Consumer<JsonArrayBuilder> doForArray) {
             json.append("\"")
                     .append(key)
                     .append("\"")
                     .append(split);
             JsonArrayBuilder arrayBuilder = getInnerArrayBuilder();
-            doForArray.call(arrayBuilder);
+            runSafe(doForArray, arrayBuilder);
             arrayBuilder.close();
             json.append(divider);
             return this;
         }
 
-        public JsonBuilder addJson(String key, Action1<JsonBuilder> doForJson) {
+        public JsonBuilder addJson(String key, Consumer<JsonBuilder> doForJson) {
             json.append("\"")
                     .append(key)
                     .append("\"")
                     .append(split);
             JsonBuilder jsonBuilder = getInnerJsonBuilder();
-            doForJson.call(jsonBuilder);
+            runSafe(doForJson, jsonBuilder);
             jsonBuilder.close();
             json.append(divider);
             return this;
@@ -241,6 +242,14 @@ public class JsonUtil {
 
             putString(key, object.toString());
             return this;
+        }
+    }
+
+    private static  <T> void runSafe(Consumer<T> consumer, T t) {
+        try {
+            consumer.accept(t);
+        } catch (Exception e) {
+            LogUtil.e(e);
         }
     }
 

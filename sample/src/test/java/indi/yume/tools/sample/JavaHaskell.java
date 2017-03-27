@@ -5,9 +5,6 @@ import com.googlecode.totallylazy.collections.TreeList;
 
 import org.junit.Test;
 
-import fj.data.Java;
-import rx.Observable;
-
 import static com.googlecode.totallylazy.collections.TreeList.treeList;
 
 /**
@@ -20,15 +17,8 @@ public class JavaHaskell {
         Double result = solveRPN("12 23 + 3 * 3 /");
         System.out.println("Result= " + result);
         assert result == 35;
-        Observable.just(1);
-
-        ((JavaHaskell)null).hello();
 
         main();
-    }
-
-    public static void hello() {
-        System.out.println("hello");
     }
 
     public static boolean foo(char c) {

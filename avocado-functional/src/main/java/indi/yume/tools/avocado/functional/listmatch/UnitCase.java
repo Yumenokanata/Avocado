@@ -1,10 +1,11 @@
 package indi.yume.tools.avocado.functional.listmatch;
 
+import indi.yume.tools.avocado.functional.FuncUtils;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 /**
  * Created by yume on 16-8-15.
@@ -20,12 +21,12 @@ public class UnitCase {
         private final C checkValue;
 
         public <W> UnitCaseWord<C> case_(
-                Func1<C, Tuple2<Boolean, W>> matcher,
-                Action1<W> action) {
-            final Tuple2<Boolean, W> data = matcher.call(checkValue);
+                Function<C, Tuple2<Boolean, W>> matcher,
+                Consumer<W> action) {
+            final Tuple2<Boolean, W> data = FuncUtils.runUnsafe(matcher, checkValue);
 
             if(data.getData1()) {
-                action.call(data.getData2());
+                FuncUtils.runUnsafe(action, data.getData2());
                 return UnitCaseWord.RightCase.unit(checkValue);
             }
 
@@ -33,22 +34,22 @@ public class UnitCase {
         }
 
         public UnitCaseWord<C> case_pd(
-                Func1<C, Boolean> matcher,
-                Action1<C> action) {
-            return case_(v -> Tuple2.<Boolean, C>of(matcher.call(v), v), action);
+                Function<C, Boolean> matcher,
+                Consumer<C> action) {
+            return case_(v -> Tuple2.<Boolean, C>of(matcher.apply(v), v), action);
         }
     }
 
     public static abstract class UnitCaseWord<C> {
         public abstract <W> UnitCaseWord<C> case_(
-                Func1<C, Tuple2<Boolean, W>> matcher,
-                Action1<W> action);
+                Function<C, Tuple2<Boolean, W>> matcher,
+                Consumer<W> action);
 
-        public abstract void else_(Action1<C> action);
+        public abstract void else_(Consumer<C> action);
 
-        public UnitCaseWord<C> case_pd(Func1<C, Boolean> matcher,
-                                       Action1<C> action){
-            return this.case_(v -> Tuple2.<Boolean, C>of(matcher.call(v), v), action);
+        public UnitCaseWord<C> case_pd(Function<C, Boolean> matcher,
+                                       Consumer<C> action){
+            return this.case_(v -> Tuple2.<Boolean, C>of(matcher.apply(v), v), action);
         }
 
         @Data(staticConstructor = "unit")
@@ -58,12 +59,12 @@ public class UnitCase {
 
             @Override
             public <W> UnitCaseWord<C> case_(
-                    Func1<C, Tuple2<Boolean, W>> matcher,
-                    Action1<W> action) {
-                final Tuple2<Boolean, W> data = matcher.call(checkValue);
+                    Function<C, Tuple2<Boolean, W>> matcher,
+                    Consumer<W> action) {
+                final Tuple2<Boolean, W> data = FuncUtils.runUnsafe(matcher, checkValue);
 
                 if(data.getData1()) {
-                    action.call(data.getData2());
+                    FuncUtils.runUnsafe(action, data.getData2());
                     return RightCase.unit(checkValue);
                 }
 
@@ -71,8 +72,8 @@ public class UnitCase {
             }
 
             @Override
-            public void else_(Action1<C> action) {
-                action.call(checkValue);
+            public void else_(Consumer<C> action) {
+                FuncUtils.runUnsafe(action, checkValue);
             }
         }
 
@@ -83,13 +84,13 @@ public class UnitCase {
 
             @Override
             public <W> UnitCaseWord<C> case_(
-                    Func1<C, Tuple2<Boolean, W>> matcher,
-                    Action1<W> action) {
+                    Function<C, Tuple2<Boolean, W>> matcher,
+                    Consumer<W> action) {
                 return this;
             }
 
             @Override
-            public void else_(Action1<C> action) {
+            public void else_(Consumer<C> action) {
 
             }
         }

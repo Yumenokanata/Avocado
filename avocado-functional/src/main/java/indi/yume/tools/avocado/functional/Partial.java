@@ -1,20 +1,17 @@
 package indi.yume.tools.avocado.functional;
 
+import com.annimon.stream.function.ThrowableSupplier;
+
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Function3;
+import io.reactivex.functions.Function4;
+import io.reactivex.functions.Function5;
+import io.reactivex.functions.Function6;
 import lombok.experimental.UtilityClass;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Action3;
-import rx.functions.Action4;
-import rx.functions.Action5;
-import rx.functions.Action6;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
 
 /**
  * Created by yume on 16-7-13.
@@ -22,182 +19,106 @@ import rx.functions.Func6;
 @UtilityClass
 public class Partial {
     //(P1) -> R
-    public static <P1, R> Func0<R> part1(Func1<P1, R> f, final P1 p1) {
-        return () -> f.call(p1);
+    public static <P1, R> ThrowableSupplier<R, Exception> part1(Function<P1, R> f, final P1 p1) {
+        return () -> f.apply(p1);
     }
 
     //(P1, P2) -> R
-    public static <P1, P2, R> Func1<P2, R> part1(Func2<P1, P2, R> f, final P1 p1) {
-        return p2 -> f.call(p1, p2);
+    public static <P1, P2, R> Function<P2, R> part1(BiFunction<P1, P2, R> f, final P1 p1) {
+        return p2 -> f.apply(p1, p2);
     }
 
-    public static <P1, P2, R> Func1<P1, R> part2(Func2<P1, P2, R> f, final P2 p2) {
-        return p1 -> f.call(p1, p2);
+    public static <P1, P2, R> Function<P1, R> part2(BiFunction<P1, P2, R> f, final P2 p2) {
+        return p1 -> f.apply(p1, p2);
     }
 
     //(P1, P2, P3) -> R
-    public static <P1, P2, P3, R> Func2<P2, P3, R> part1(Func3<P1, P2, P3, R> f, final P1 p1) {
-        return (p2, p3) -> f.call(p1, p2, p3);
+    public static <P1, P2, P3, R> BiFunction<P2, P3, R> part1(Function3<P1, P2, P3, R> f, final P1 p1) {
+        return (p2, p3) -> f.apply(p1, p2, p3);
     }
 
-    public static <P1, P2, P3, R> Func2<P1, P3, R> part2(Func3<P1, P2, P3, R> f, final P2 p2) {
-        return (p1, p3) -> f.call(p1, p2, p3);
+    public static <P1, P2, P3, R> BiFunction<P1, P3, R> part2(Function3<P1, P2, P3, R> f, final P2 p2) {
+        return (p1, p3) -> f.apply(p1, p2, p3);
     }
 
-    public static <P1, P2, P3, R> Func2<P1, P2, R> part3(Func3<P1, P2, P3, R> f, final P3 p3) {
-        return (p1, p2) -> f.call(p1, p2, p3);
+    public static <P1, P2, P3, R> BiFunction<P1, P2, R> part3(Function3<P1, P2, P3, R> f, final P3 p3) {
+        return (p1, p2) -> f.apply(p1, p2, p3);
     }
 
     //(P1, P2, P3, P4) -> R
-    public static <P1, P2, P3, P4, R> Func3<P2, P3, P4, R> part1(Func4<P1, P2, P3, P4, R> f, final P1 p1) {
-        return (p2, p3, p4) -> f.call(p1, p2, p3, p4);
+    public static <P1, P2, P3, P4, R> Function3<P2, P3, P4, R> part1(Function4<P1, P2, P3, P4, R> f, final P1 p1) {
+        return (p2, p3, p4) -> f.apply(p1, p2, p3, p4);
     }
 
-    public static <P1, P2, P3, P4, R> Func3<P1, P3, P4, R> part2(Func4<P1, P2, P3, P4, R> f, final P2 p2) {
-        return (p1, p3, p4) -> f.call(p1, p2, p3, p4);
+    public static <P1, P2, P3, P4, R> Function3<P1, P3, P4, R> part2(Function4<P1, P2, P3, P4, R> f, final P2 p2) {
+        return (p1, p3, p4) -> f.apply(p1, p2, p3, p4);
     }
 
-    public static <P1, P2, P3, P4, R> Func3<P1, P2, P4, R> part3(Func4<P1, P2, P3, P4, R> f, final P3 p3) {
-        return (p1, p2, p4) -> f.call(p1, p2, p3, p4);
+    public static <P1, P2, P3, P4, R> Function3<P1, P2, P4, R> part3(Function4<P1, P2, P3, P4, R> f, final P3 p3) {
+        return (p1, p2, p4) -> f.apply(p1, p2, p3, p4);
     }
 
-    public static <P1, P2, P3, P4, R> Func3<P1, P2, P3, R> part4(Func4<P1, P2, P3, P4, R> f, final P4 p4) {
-        return (p1, p2, p3) -> f.call(p1, p2, p3, p4);
+    public static <P1, P2, P3, P4, R> Function3<P1, P2, P3, R> part4(Function4<P1, P2, P3, P4, R> f, final P4 p4) {
+        return (p1, p2, p3) -> f.apply(p1, p2, p3, p4);
     }
 
     //(P1, P2, P3, P4, P5) -> R
-    public static <P1, P2, P3, P4, P5, R> Func4<P2, P3, P4, P5, R> part1(Func5<P1, P2, P3, P4, P5, R> f, final P1 p1) {
-        return (p2, p3, p4, p5) -> f.call(p1, p2, p3, p4, p5);
+    public static <P1, P2, P3, P4, P5, R> Function4<P2, P3, P4, P5, R> part1(Function5<P1, P2, P3, P4, P5, R> f, final P1 p1) {
+        return (p2, p3, p4, p5) -> f.apply(p1, p2, p3, p4, p5);
     }
 
-    public static <P1, P2, P3, P4, P5, R> Func4<P1, P3, P4, P5, R> part2(Func5<P1, P2, P3, P4, P5, R> f, final P2 p2) {
-        return (p1, p3, p4, p5) -> f.call(p1, p2, p3, p4, p5);
+    public static <P1, P2, P3, P4, P5, R> Function4<P1, P3, P4, P5, R> part2(Function5<P1, P2, P3, P4, P5, R> f, final P2 p2) {
+        return (p1, p3, p4, p5) -> f.apply(p1, p2, p3, p4, p5);
     }
 
-    public static <P1, P2, P3, P4, P5, R> Func4<P1, P2, P4, P5, R> part3(Func5<P1, P2, P3, P4, P5, R> f, final P3 p3) {
-        return (p1, p2, p4, p5) -> f.call(p1, p2, p3, p4, p5);
+    public static <P1, P2, P3, P4, P5, R> Function4<P1, P2, P4, P5, R> part3(Function5<P1, P2, P3, P4, P5, R> f, final P3 p3) {
+        return (p1, p2, p4, p5) -> f.apply(p1, p2, p3, p4, p5);
     }
 
-    public static <P1, P2, P3, P4, P5, R> Func4<P1, P2, P3, P5, R> part4(Func5<P1, P2, P3, P4, P5, R> f, final P4 p4) {
-        return (p1, p2, p3, p5) -> f.call(p1, p2, p3, p4, p5);
+    public static <P1, P2, P3, P4, P5, R> Function4<P1, P2, P3, P5, R> part4(Function5<P1, P2, P3, P4, P5, R> f, final P4 p4) {
+        return (p1, p2, p3, p5) -> f.apply(p1, p2, p3, p4, p5);
     }
 
-    public static <P1, P2, P3, P4, P5, R> Func4<P1, P2, P3, P4, R> part5(Func5<P1, P2, P3, P4, P5, R> f, final P5 p5) {
-        return (p1, p2, p3, p4) -> f.call(p1, p2, p3, p4, p5);
+    public static <P1, P2, P3, P4, P5, R> Function4<P1, P2, P3, P4, R> part5(Function5<P1, P2, P3, P4, P5, R> f, final P5 p5) {
+        return (p1, p2, p3, p4) -> f.apply(p1, p2, p3, p4, p5);
     }
 
     //(P1, P2, P3, P4, P5, P6) -> R
-    public static <P1, P2, P3, P4, P5, P6, R> Func5<P2, P3, P4, P5, P6, R> part1(Func6<P1, P2, P3, P4, P5, P6, R> f, final P1 p1) {
-        return (p2, p3, p4, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2, P3, P4, P5, P6, R> Function5<P2, P3, P4, P5, P6, R> part1(Function6<P1, P2, P3, P4, P5, P6, R> f, final P1 p1) {
+        return (p2, p3, p4, p5, p6) -> f.apply(p1, p2, p3, p4, p5, p6);
     }
 
-    public static <P1, P2, P3, P4, P5, P6, R> Func5<P1, P3, P4, P5, P6, R> part2(Func6<P1, P2, P3, P4, P5, P6, R> f, final P2 p2) {
-        return (p1, p3, p4, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2, P3, P4, P5, P6, R> Function5<P1, P3, P4, P5, P6, R> part2(Function6<P1, P2, P3, P4, P5, P6, R> f, final P2 p2) {
+        return (p1, p3, p4, p5, p6) -> f.apply(p1, p2, p3, p4, p5, p6);
     }
 
-    public static <P1, P2, P3, P4, P5, P6, R> Func5<P1, P2, P4, P5, P6, R> part3(Func6<P1, P2, P3, P4, P5, P6, R> f, final P3 p3) {
-        return (p1, p2, p4, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2, P3, P4, P5, P6, R> Function5<P1, P2, P4, P5, P6, R> part3(Function6<P1, P2, P3, P4, P5, P6, R> f, final P3 p3) {
+        return (p1, p2, p4, p5, p6) -> f.apply(p1, p2, p3, p4, p5, p6);
     }
 
-    public static <P1, P2, P3, P4, P5, P6, R> Func5<P1, P2, P3, P5, P6, R> part4(Func6<P1, P2, P3, P4, P5, P6, R> f, final P4 p4) {
-        return (p1, p2, p3, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2, P3, P4, P5, P6, R> Function5<P1, P2, P3, P5, P6, R> part4(Function6<P1, P2, P3, P4, P5, P6, R> f, final P4 p4) {
+        return (p1, p2, p3, p5, p6) -> f.apply(p1, p2, p3, p4, p5, p6);
     }
 
-    public static <P1, P2, P3, P4, P5, P6, R> Func5<P1, P2, P3, P4, P6, R> part5(Func6<P1, P2, P3, P4, P5, P6, R> f, final P5 p5) {
-        return (p1, p2, p3, p4, p6) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2, P3, P4, P5, P6, R> Function5<P1, P2, P3, P4, P6, R> part5(Function6<P1, P2, P3, P4, P5, P6, R> f, final P5 p5) {
+        return (p1, p2, p3, p4, p6) -> f.apply(p1, p2, p3, p4, p5, p6);
     }
 
-    public static <P1, P2, P3, P4, P5, P6, R> Func5<P1, P2, P3, P4, P5, R> part6(Func6<P1, P2, P3, P4, P5, P6, R> f, final P6 p6) {
-        return (p1, p2, p3, p4, p5) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2, P3, P4, P5, P6, R> Function5<P1, P2, P3, P4, P5, R> part6(Function6<P1, P2, P3, P4, P5, P6, R> f, final P6 p6) {
+        return (p1, p2, p3, p4, p5) -> f.apply(p1, p2, p3, p4, p5, p6);
     }
 
     //(P1) -> R
-    public static <P1> Action0 part1(Action1<P1> f, final P1 p1) {
-        return () -> f.call(p1);
+    public static <P1> Action part1(Consumer<P1> f, final P1 p1) {
+        return () -> f.accept(p1);
     }
 
     //(P1, P2) -> R
-    public static <P1, P2> Action1<P2> part1(Action2<P1, P2> f, final P1 p1) {
-        return p2 -> f.call(p1, p2);
+    public static <P1, P2> Consumer<P2> part1(BiConsumer<P1, P2> f, final P1 p1) {
+        return p2 -> f.accept(p1, p2);
     }
 
-    public static <P1, P2> Action1<P1> part2(Action2<P1, P2> f, final P2 p2) {
-        return p1 -> f.call(p1, p2);
-    }
-
-    //(P1, P2, P3) -> R
-    public static <P1, P2, P3> Action2<P2, P3> part1(Action3<P1, P2, P3> f, final P1 p1) {
-        return (p2, p3) -> f.call(p1, p2, p3);
-    }
-
-    public static <P1, P2, P3> Action2<P1, P3> part2(Action3<P1, P2, P3> f, final P2 p2) {
-        return (p1, p3) -> f.call(p1, p2, p3);
-    }
-
-    public static <P1, P2, P3> Action2<P1, P2> part3(Action3<P1, P2, P3> f, final P3 p3) {
-        return (p1, p2) -> f.call(p1, p2, p3);
-    }
-
-    //(P1, P2, P3, P4) -> R
-    public static <P1, P2, P3, P4> Action3<P2, P3, P4> part1(Action4<P1, P2, P3, P4> f, final P1 p1) {
-        return (p2, p3, p4) -> f.call(p1, p2, p3, p4);
-    }
-
-    public static <P1, P2, P3, P4> Action3<P1, P3, P4> part2(Action4<P1, P2, P3, P4> f, final P2 p2) {
-        return (p1, p3, p4) -> f.call(p1, p2, p3, p4);
-    }
-
-    public static <P1, P2, P3, P4> Action3<P1, P2, P4> part3(Action4<P1, P2, P3, P4> f, final P3 p3) {
-        return (p1, p2, p4) -> f.call(p1, p2, p3, p4);
-    }
-
-    public static <P1, P2, P3, P4> Action3<P1, P2, P3> part4(Action4<P1, P2, P3, P4> f, final P4 p4) {
-        return (p1, p2, p3) -> f.call(p1, p2, p3, p4);
-    }
-
-    //(P1, P2, P3, P4, P5) -> R
-    public static <P1, P2, P3, P4, P5> Action4<P2, P3, P4, P5> part1(Action5<P1, P2, P3, P4, P5> f, final P1 p1) {
-        return (p2, p3, p4, p5) -> f.call(p1, p2, p3, p4, p5);
-    }
-
-    public static <P1, P2, P3, P4, P5> Action4<P1, P3, P4, P5> part2(Action5<P1, P2, P3, P4, P5> f, final P2 p2) {
-        return (p1, p3, p4, p5) -> f.call(p1, p2, p3, p4, p5);
-    }
-
-    public static <P1, P2, P3, P4, P5> Action4<P1, P2, P4, P5> part3(Action5<P1, P2, P3, P4, P5> f, final P3 p3) {
-        return (p1, p2, p4, p5) -> f.call(p1, p2, p3, p4, p5);
-    }
-
-    public static <P1, P2, P3, P4, P5> Action4<P1, P2, P3, P5> part4(Action5<P1, P2, P3, P4, P5> f, final P4 p4) {
-        return (p1, p2, p3, p5) -> f.call(p1, p2, p3, p4, p5);
-    }
-
-    public static <P1, P2, P3, P4, P5> Action4<P1, P2, P3, P4> part5(Action5<P1, P2, P3, P4, P5> f, final P5 p5) {
-        return (p1, p2, p3, p4) -> f.call(p1, p2, p3, p4, p5);
-    }
-
-    //(P1, P2, P3, P4, P5, P6) -> R
-    public static <P1, P2, P3, P4, P5, P6> Action5<P2, P3, P4, P5, P6> part1(Action6<P1, P2, P3, P4, P5, P6> f, final P1 p1) {
-        return (p2, p3, p4, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
-    }
-
-    public static <P1, P2, P3, P4, P5, P6> Action5<P1, P3, P4, P5, P6> part2(Action6<P1, P2, P3, P4, P5, P6> f, final P2 p2) {
-        return (p1, p3, p4, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
-    }
-
-    public static <P1, P2, P3, P4, P5, P6> Action5<P1, P2, P4, P5, P6> part3(Action6<P1, P2, P3, P4, P5, P6> f, final P3 p3) {
-        return (p1, p2, p4, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
-    }
-
-    public static <P1, P2, P3, P4, P5, P6> Action5<P1, P2, P3, P5, P6> part4(Action6<P1, P2, P3, P4, P5, P6> f, final P4 p4) {
-        return (p1, p2, p3, p5, p6) -> f.call(p1, p2, p3, p4, p5, p6);
-    }
-
-    public static <P1, P2, P3, P4, P5, P6> Action5<P1, P2, P3, P4, P6> part5(Action6<P1, P2, P3, P4, P5, P6> f, final P5 p5) {
-        return (p1, p2, p3, p4, p6) -> f.call(p1, p2, p3, p4, p5, p6);
-    }
-
-    public static <P1, P2, P3, P4, P5, P6> Action5<P1, P2, P3, P4, P5> part6(Action6<P1, P2, P3, P4, P5, P6> f, final P6 p6) {
-        return (p1, p2, p3, p4, p5) -> f.call(p1, p2, p3, p4, p5, p6);
+    public static <P1, P2> Consumer<P1> part2(BiConsumer<P1, P2> f, final P2 p2) {
+        return p1 -> f.accept(p1, p2);
     }
 }

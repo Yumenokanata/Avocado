@@ -2,31 +2,27 @@ package indi.yume.tools.avocado.functional;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
-import com.annimon.stream.Stream;
 
 import org.junit.Test;
 import org.pcollections.ConsPStack;
 import org.pcollections.PStack;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import indi.yume.tools.avocado.functional.doexp.DoOption;
-import indi.yume.tools.avocado.functional.doexp.DoSteamUtil;
 import indi.yume.tools.avocado.functional.doexp.DoUtil;
 import indi.yume.tools.avocado.functional.matching.CaseUtil;
-import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.model.tuple.Tuple3;
+import io.reactivex.Flowable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.val;
-import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
 
 import static indi.yume.tools.avocado.functional.Func.st;
-import static indi.yume.tools.avocado.functional.Utils.const1;
+import static indi.yume.tools.avocado.functional.FuncUtils.const1;
 import static indi.yume.tools.avocado.functional.ifexpression.IfExpression.if_;
 import static indi.yume.tools.avocado.functional.listmatch.CaseUtil.match;
 import static indi.yume.tools.avocado.functional.matching.Matcher.eq;
@@ -43,7 +39,7 @@ import static org.junit.Assert.*;
 public class FunctionalWhenTest {
 
     @Test
-    public void testExtension() {
+    public void testExtension() throws Exception {
         TestMonad monad = st(TestMonad.unit(1))
                 .at(TestMonad::map, i -> i + 1)
                 .at(TestMonad::flatMap, i -> TestMonad.unit(i + 1))
@@ -56,7 +52,7 @@ public class FunctionalWhenTest {
                 .at(TestMonad::flatMap, i -> TestMonad.unit(i + 1))
                 .get();
 
-        System.out.println(monadFun.call(1).toString());
+        System.out.println(monadFun.apply(1).toString());
     }
 
     @Data
@@ -67,12 +63,12 @@ public class FunctionalWhenTest {
             return new TestMonad(i);
         }
 
-        public static TestMonad map(TestMonad monad, Func1<Integer, Integer> f) {
-            return new TestMonad(f.call(monad.getI()));
+        public static TestMonad map(TestMonad monad, com.annimon.stream.function.Function<Integer, Integer> f) {
+            return new TestMonad(f.apply(monad.getI()));
         }
 
-        public static TestMonad flatMap(TestMonad monad, Func1<Integer, TestMonad> f) {
-            return f.call(monad.getI());
+        public static TestMonad flatMap(TestMonad monad, com.annimon.stream.function.Function<Integer, TestMonad> f) {
+            return f.apply(monad.getI());
         }
     }
 
@@ -91,7 +87,7 @@ public class FunctionalWhenTest {
                 .map(tuple ->
                         String.format("    public static <%1$s> Func%3$d<%1$s, Void> voidFun%3$d(final Action%3$d<%1$s> act) {\n" +
                                 "        return (%2$s) -> {\n" +
-                                "            act.call(%2$s);\n" +
+                                "            act.apply(%2$s);\n" +
                                 "            return null;\n" +
                                 "        };\n" +
                                 "    }\n",
@@ -100,8 +96,8 @@ public class FunctionalWhenTest {
                                 tuple.getData3()))
                 .collect(Collectors.joining("\n"));
 
-        Func1<Integer, Func1<Integer, String>> curry = Currying.curried((i1, i2) -> i1 + "+" + i2);
-        Func2<Integer, Integer, String> partial = Partial.part2((i1, s2, i3) -> i1 + "+" + s2 + "+" + i3, "2");
+        Function<Integer, Function<Integer, String>> curry = Currying.curried((i1, i2) -> i1 + "+" + i2);
+        BiFunction<Integer, Integer, String> partial = Partial.part2((i1, s2, i3) -> i1 + "+" + s2 + "+" + i3, "2");
         System.out.println(code);
     }
 
@@ -207,9 +203,9 @@ public class FunctionalWhenTest {
     @Test
     public void testDoUtil() {
         DoUtil
-                .do_(() -> Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9))
-                .do_(() -> Observable.just(2, 3))
-                .do_12((t1, t2) -> Observable.just("" + t1 + t2))
+                .do_(() -> Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9))
+                .do_(() -> Flowable.just(2, 3))
+                .do_12((t1, t2) -> Flowable.just("" + t1 + t2))
                 .yield()
                 .subscribe(System.out::println);
 

@@ -27,7 +27,6 @@ import indi.yume.tools.avocado.collect.interval.IntervalTree;
 import indi.yume.tools.avocado.model.DayDate;
 import indi.yume.tools.avocado.model.tuple.Tuple2;
 import indi.yume.tools.avocado.util.Timer;
-import rx.Observable;
 
 import static org.junit.Assert.*;
 
