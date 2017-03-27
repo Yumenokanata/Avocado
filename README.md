@@ -3,6 +3,8 @@
 # Avocado
 一个工具类的集合
 
+### 2.5版开始Rxjava升级为支持Rxjava2
+
 1. __大量函数式工具的实现 (科里化Currying、部份施用Partial application、记忆模式、模式匹配...)__
 2. 区域树容器：区域树的实现以及扩展的容器  
 3. DayDate：日期的封装，以及相应的迭代容器  
